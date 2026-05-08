@@ -1,0 +1,33 @@
+{
+  "name": "kompanionki",
+  "version": "0.0.1",
+  "private": true,
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "format": "turbo run format",
+    "api": "turbo run dev --filter=api",
+    "api:prod": "npm run build -w api && npm run start -w api",
+    "start": "npm run start -w mobile",
+    "pod-install": "npm run pod-install -w mobile",
+    "ios": "npm run ios -w mobile",
+    "ios:device": "npm run ios:device -w mobile",
+    "android": "npm run android -w mobile",
+    "db:migrate": "turbo run db:migrate --filter=api",
+    "db:seed": "turbo run db:seed --filter=api"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.25",
+    "turbo": "^2.9.6",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

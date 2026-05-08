@@ -1,0 +1,162 @@
+{
+  "appName": "Компаньйонки",
+  "tagline": "Жіноча спілка для життєвого партнерства",
+  "nav": {
+    "discover": "Пошук",
+    "groups": "Групи",
+    "messages": "Повідомлення",
+    "events": "Події",
+    "profile": "Профіль"
+  },
+  "auth": {
+    "phoneTitle": "Введіть номер телефону",
+    "phoneSubtitle": "Ми надішлемо код підтвердження",
+    "phonePlaceholder": "+380XXXXXXXXX",
+    "sendCode": "Надіслати код",
+    "otpTitle": "Код підтвердження",
+    "otpSubtitle": "Введіть код із SMS",
+    "verifyCode": "Підтвердити",
+    "resend": "Надіслати знову",
+    "resendIn": "Повторно через {{sec}} с"
+  },
+  "onboarding": {
+    "welcome": "Ласкаво просимо",
+    "subtitle": "Знайдіть надійну партнерку для спільного життя",
+    "getStarted": "Почати",
+    "next": "Далі",
+    "back": "Назад",
+    "skip": "Пропустити",
+    "finish": "Завершити",
+    "step1Title": "Про вас",
+    "step1Subtitle": "Розкажіть трохи про себе",
+    "step2Title": "Ваші наміри",
+    "step2Subtitle": "Що ви шукаєте?",
+    "step3Title": "Ваші цінності",
+    "step3Subtitle": "Що для вас важливо?",
+    "step4Title": "Фото профілю",
+    "step4Subtitle": "Додайте своє фото",
+    "name": "Ім'я",
+    "namePlaceholder": "Як вас звати?",
+    "birthYear": "Рік народження",
+    "city": "Місто",
+    "cityPlaceholder": "Де ви живете?",
+    "bio": "Про мене",
+    "bioPlaceholder": "Розкажіть про себе...",
+    "occupation": "Професія",
+    "occupationPlaceholder": "Чим ви займаєтесь?",
+    "lifeStage": "Життєвий етап",
+    "childrenStatus": "Діти"
+  },
+  "intents": {
+    "friendship": "Дружба",
+    "friendship_desc": "Пошук подруги для спілкування",
+    "co_living": "Спільне проживання",
+    "co_living_desc": "Спільне проживання та побут",
+    "co_parenting": "Спільне виховання",
+    "co_parenting_desc": "Спільне виховання дітей",
+    "co_business": "Спільний бізнес",
+    "co_business_desc": "Партнерство у бізнесі",
+    "mentorship": "Менторство",
+    "mentorship_desc": "Навчання та розвиток",
+    "support": "Підтримка",
+    "support_desc": "Взаємна підтримка"
+  },
+  "lifeStages": {
+    "single": "Незаміжня",
+    "single_mother": "Мама-одиначка",
+    "partnered": "У стосунках",
+    "widowed": "Вдова",
+    "divorced": "Розлучена",
+    "other": "Інше"
+  },
+  "childrenStatuses": {
+    "none": "Немає дітей",
+    "have": "Є діти",
+    "planning": "Планую",
+    "prefer_not_say": "Не хочу відповідати"
+  },
+  "discovery": {
+    "title": "Знайомства",
+    "noMoreProfiles": "Більше немає профілів",
+    "checkBackLater": "Перевірте пізніше",
+    "newConnections": "Нові зв'язки",
+    "filters": "Фільтри",
+    "distance": "Відстань",
+    "age": "Вік",
+    "intent": "Намір"
+  },
+  "profile": {
+    "title": "Мій профіль",
+    "edit": "Редагувати",
+    "settings": "Налаштування",
+    "logout": "Вийти",
+    "verified": "Верифіковано",
+    "yearsOld": "років",
+    "connections": "Зв'язки",
+    "endorsements": "Відгуки",
+    "about": "Про мене",
+    "lookingFor": "Шукаю",
+    "values": "Цінності"
+  },
+  "messages": {
+    "title": "Повідомлення",
+    "noMessages": "Немає повідомлень",
+    "startConversation": "Почніть спілкування",
+    "typeMessage": "Напишіть повідомлення...",
+    "send": "Надіслати"
+  },
+  "groups": {
+    "title": "Групи",
+    "join": "Приєднатися",
+    "leave": "Вийти",
+    "members": "учасниць",
+    "myGroups": "Мої групи",
+    "explore": "Відкрити",
+    "posts": "Дописи",
+    "writePost": "Написати допис..."
+  },
+  "events": {
+    "title": "Події",
+    "going": "Піду",
+    "interested": "Цікавить",
+    "attendees": "учасниць",
+    "online": "Онлайн",
+    "upcoming": "Майбутні",
+    "past": "Минулі"
+  },
+  "actions": {
+    "connect": "Познайомитися",
+    "message": "Написати",
+    "like": "Подобається",
+    "pass": "Пропустити",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "confirm": "Підтвердити",
+    "delete": "Видалити",
+    "report": "Поскаржитися",
+    "block": "Заблокувати"
+  },
+  "errors": {
+    "required": "Обов'язкове поле",
+    "invalidPhone": "Невірний номер телефону",
+    "networkError": "Помилка мережі",
+    "tryAgain": "Спробуйте ще раз",
+    "unauthorized": "Необхідно увійти",
+    "forbidden": "Немає доступу",
+    "notFound": "Не знайдено"
+  },
+  "valuesTags": [
+    "сім'я",
+    "кар'єра",
+    "здоров'я",
+    "природа",
+    "подорожі",
+    "творчість",
+    "освіта",
+    "спорт",
+    "мистецтво",
+    "технології",
+    "духовність",
+    "волонтерство"
+  ]
+}

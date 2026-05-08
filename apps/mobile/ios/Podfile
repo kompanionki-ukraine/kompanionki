@@ -1,0 +1,62 @@
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+# Prebuilt React-Core uses Metro 8081 in the binary. Metro uses 9087 — build Core from source and set
+# RCT_METRO_PORT in post_install so RCTBundleURLProvider packager /status and Dev Menu fallbacks match Metro.
+# Set to 1 for faster CI/debug iteration if you accept 8081 noise in logs (keep RCT_METRO_PORT in the Run scheme).
+ENV['RCT_USE_PREBUILT_RNCORE'] = '0'
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
+target 'Kompanionki' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false
+    )
+
+    # React-Core.podspec uses GCC_PREPROCESSOR_DEFINITIONS RCT_METRO_PORT=${RCT_METRO_PORT}; set the build setting
+    # here so it resolves to 9087 (must match metro.config.js / AppDelegate / CLI --port).
+    installer.pods_project.build_configurations.each do |cfg|
+      cfg.build_settings['RCT_METRO_PORT'] = '9087'
+    end
+
+    # ── Xcode 26 / Hermes ≥ 250829xxx compatibility ──────────────────────────
+    # The old hermes/inspector/ API was removed; patch all targets that need it.
+    hermes_compat_path = "\"#{File.join(File.dirname(__FILE__), 'hermes-compat')}\""
+
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        # Inject the compat shim search path
+        existing = config.build_settings['HEADER_SEARCH_PATHS'] || '$(inherited)'
+        config.build_settings['HEADER_SEARCH_PATHS'] =
+          "#{existing} #{hermes_compat_path}"
+
+        # Restore iphonesimulator support that was lost by SDKROOT=iphoneos
+        if config.build_settings['SDKROOT'] == 'iphoneos'
+          config.build_settings['SDKROOT'] = 'auto'
+        end
+      end
+    end
+    # ─────────────────────────────────────────────────────────────────────────
+  end
+end

@@ -1,0 +1,43 @@
+# Repository root — applies to all workspaces (apps/*, packages/*).
+# iOS/Android/Xcode/Metro/Pods/fastlane patterns stay in apps/mobile/.gitignore.
+
+# Dependencies
+node_modules/
+
+# Turborepo
+.turbo/
+
+# Environment variables — NEVER commit plain .env files
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.vault
+!.env.production
+!.env.development
+!.env.staging
+
+# dotenvx private keys — NEVER commit these
+.env.keys
+
+# Build & TypeScript
+dist/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Tests & coverage
+coverage/
+
+# Caches
+.cache/
+.eslintcache
+
+# OS
+.DS_Store
+Thumbs.db

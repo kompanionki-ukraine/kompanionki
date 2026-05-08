@@ -1,0 +1,162 @@
+{
+  "appName": "Компаньонки",
+  "tagline": "Женский союз для жизненного партнёрства",
+  "nav": {
+    "discover": "Поиск",
+    "groups": "Группы",
+    "messages": "Сообщения",
+    "events": "События",
+    "profile": "Профиль"
+  },
+  "auth": {
+    "phoneTitle": "Введите номер телефона",
+    "phoneSubtitle": "Мы отправим код подтверждения",
+    "phonePlaceholder": "+380XXXXXXXXX",
+    "sendCode": "Отправить код",
+    "otpTitle": "Код подтверждения",
+    "otpSubtitle": "Введите код из SMS",
+    "verifyCode": "Подтвердить",
+    "resend": "Отправить снова",
+    "resendIn": "Повторно через {{sec}} с"
+  },
+  "onboarding": {
+    "welcome": "Добро пожаловать",
+    "subtitle": "Найдите надёжную партнёршу для совместной жизни",
+    "getStarted": "Начать",
+    "next": "Далее",
+    "back": "Назад",
+    "skip": "Пропустить",
+    "finish": "Завершить",
+    "step1Title": "О вас",
+    "step1Subtitle": "Расскажите немного о себе",
+    "step2Title": "Ваши намерения",
+    "step2Subtitle": "Что вы ищете?",
+    "step3Title": "Ваши ценности",
+    "step3Subtitle": "Что для вас важно?",
+    "step4Title": "Фото профиля",
+    "step4Subtitle": "Добавьте своё фото",
+    "name": "Имя",
+    "namePlaceholder": "Как вас зовут?",
+    "birthYear": "Год рождения",
+    "city": "Город",
+    "cityPlaceholder": "Где вы живёте?",
+    "bio": "О себе",
+    "bioPlaceholder": "Расскажите о себе...",
+    "occupation": "Профессия",
+    "occupationPlaceholder": "Чем вы занимаетесь?",
+    "lifeStage": "Жизненный этап",
+    "childrenStatus": "Дети"
+  },
+  "intents": {
+    "friendship": "Дружба",
+    "friendship_desc": "Поиск подруги для общения",
+    "co_living": "Совместное проживание",
+    "co_living_desc": "Совместный быт",
+    "co_parenting": "Совместное воспитание",
+    "co_parenting_desc": "Совместное воспитание детей",
+    "co_business": "Совместный бизнес",
+    "co_business_desc": "Деловое партнёрство",
+    "mentorship": "Менторство",
+    "mentorship_desc": "Обучение и развитие",
+    "support": "Поддержка",
+    "support_desc": "Взаимная поддержка"
+  },
+  "lifeStages": {
+    "single": "Не замужем",
+    "single_mother": "Мать-одиночка",
+    "partnered": "В отношениях",
+    "widowed": "Вдова",
+    "divorced": "Разведена",
+    "other": "Другое"
+  },
+  "childrenStatuses": {
+    "none": "Нет детей",
+    "have": "Есть дети",
+    "planning": "Планирую",
+    "prefer_not_say": "Не хочу отвечать"
+  },
+  "discovery": {
+    "title": "Знакомства",
+    "noMoreProfiles": "Больше нет профилей",
+    "checkBackLater": "Проверьте позже",
+    "newConnections": "Новые связи",
+    "filters": "Фильтры",
+    "distance": "Расстояние",
+    "age": "Возраст",
+    "intent": "Намерение"
+  },
+  "profile": {
+    "title": "Мой профиль",
+    "edit": "Редактировать",
+    "settings": "Настройки",
+    "logout": "Выйти",
+    "verified": "Верифицировано",
+    "yearsOld": "лет",
+    "connections": "Связи",
+    "endorsements": "Отзывы",
+    "about": "О себе",
+    "lookingFor": "Ищу",
+    "values": "Ценности"
+  },
+  "messages": {
+    "title": "Сообщения",
+    "noMessages": "Нет сообщений",
+    "startConversation": "Начните общение",
+    "typeMessage": "Введите сообщение...",
+    "send": "Отправить"
+  },
+  "groups": {
+    "title": "Группы",
+    "join": "Вступить",
+    "leave": "Выйти",
+    "members": "участниц",
+    "myGroups": "Мои группы",
+    "explore": "Открыть",
+    "posts": "Записи",
+    "writePost": "Написать запись..."
+  },
+  "events": {
+    "title": "События",
+    "going": "Пойду",
+    "interested": "Интересует",
+    "attendees": "участниц",
+    "online": "Онлайн",
+    "upcoming": "Предстоящие",
+    "past": "Прошедшие"
+  },
+  "actions": {
+    "connect": "Познакомиться",
+    "message": "Написать",
+    "like": "Нравится",
+    "pass": "Пропустить",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "delete": "Удалить",
+    "report": "Пожаловаться",
+    "block": "Заблокировать"
+  },
+  "errors": {
+    "required": "Обязательное поле",
+    "invalidPhone": "Неверный номер телефона",
+    "networkError": "Ошибка сети",
+    "tryAgain": "Попробуйте снова",
+    "unauthorized": "Необходимо войти",
+    "forbidden": "Нет доступа",
+    "notFound": "Не найдено"
+  },
+  "valuesTags": [
+    "семья",
+    "карьера",
+    "здоровье",
+    "природа",
+    "путешествия",
+    "творчество",
+    "образование",
+    "спорт",
+    "искусство",
+    "технологии",
+    "духовность",
+    "волонтёрство"
+  ]
+}

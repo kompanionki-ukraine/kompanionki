@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeReadFile": [
+      {
+        "command": "node .cursor/hooks/block-api-env-read.js"
+      }
+    ],
+    "beforeTabFileRead": [
+      {
+        "command": "node .cursor/hooks/block-api-env-read.js"
+      }
+    ]
+  }
+}
