@@ -9,6 +9,16 @@
     "profile": "Профіль"
   },
   "auth": {
+    "socialTitle": "Увійти",
+    "socialSubtitle": "Оберіть спосіб входу, щоб продовжити",
+    "continueApple": "Продовжити з Apple",
+    "continueGoogle": "Продовжити з Google",
+    "continueFacebook": "Продовжити з Facebook",
+    "appleIosOnly": "Вхід через Apple доступний на iPhone та iPad.",
+    "envMissingTitle": "Не вдалося увійти",
+    "envMissingBody": "Вхід тимчасово недоступний. Спробуйте пізніше.",
+    "signInFailedTitle": "Не вдалося увійти",
+    "deepLinkFailed": "Посилання для входу застаріло або недійсне. Спробуйте ще раз.",
     "phoneTitle": "Введіть номер телефону",
     "phoneSubtitle": "Ми надішлемо код підтвердження",
     "phonePlaceholder": "+380XXXXXXXXX",

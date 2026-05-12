@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Platform } from "react-native";
+import { API_BASE_URL } from "../config/publicEnv";
 import type { RootState } from "../store";
 import type {
   Intent,
@@ -69,7 +70,10 @@ function defaultApiBaseUrl(): string {
   return "http://localhost:3000";
 }
 
-const BASE_URL = process.env.API_BASE_URL ?? defaultApiBaseUrl();
+const trimmedApi = API_BASE_URL?.trim();
+const BASE_URL = trimmedApi
+  ? trimmedApi.replace(/\/$/, "")
+  : defaultApiBaseUrl();
 
 export const api = createApi({
   reducerPath: "api",

@@ -24,7 +24,7 @@ export type ChildrenStatus =
 
 export type VerifiedLevel = "none" | "phone" | "selfie" | "id";
 
-export type LanguagePref = "uk" | "ru";
+export type LanguagePref = "uk" | "ru" | "en";
 
 export type UserStatus =
   | "pending_verification"

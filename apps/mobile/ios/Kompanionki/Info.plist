@@ -56,5 +56,24 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kompanionki</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>app.kompanionki.oauth</string>
+		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.138126597819-64i7kh12h2nniq3mitgm3t8967a2dr2n</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>app.kompanionki.google</string>
+		</dict>
+	</array>
 </dict>
 </plist>

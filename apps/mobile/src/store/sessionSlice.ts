@@ -5,7 +5,7 @@ interface SessionState {
   accessToken: string | null;
   isAuthenticated: boolean;
   onboardingCompleted: boolean;
-  languagePref: "uk" | "ru";
+  languagePref: "uk" | "ru" | "en";
 }
 
 const initialState: SessionState = {
@@ -31,7 +31,7 @@ const sessionSlice = createSlice({
     setOnboardingCompleted(state, action: PayloadAction<boolean>) {
       state.onboardingCompleted = action.payload;
     },
-    setLanguage(state, action: PayloadAction<"uk" | "ru">) {
+    setLanguage(state, action: PayloadAction<"uk" | "ru" | "en">) {
       state.languagePref = action.payload;
     },
     logout(state) {

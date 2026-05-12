@@ -7,6 +7,12 @@ declare global {
   namespace Express {
     interface Request {
       userId: string;
+      /** JWT claims from Supabase `verify` (email, user_metadata, app_metadata). */
+      authClaims?: {
+        email?: string;
+        user_metadata?: Record<string, unknown>;
+        app_metadata?: Record<string, unknown>;
+      };
     }
   }
 }
@@ -60,7 +66,11 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
       return;
     }
 
-    const payload = decoded as jwt.JwtPayload;
+    const payload = decoded as jwt.JwtPayload & {
+      email?: string;
+      user_metadata?: Record<string, unknown>;
+      app_metadata?: Record<string, unknown>;
+    };
     // Supabase puts the user id in `sub`
     const sub = payload.sub;
     if (!sub) {
@@ -69,6 +79,17 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     }
 
     req.userId = sub;
+    req.authClaims = {
+      email: typeof payload.email === "string" ? payload.email : undefined,
+      user_metadata:
+        payload.user_metadata && typeof payload.user_metadata === "object"
+          ? payload.user_metadata
+          : undefined,
+      app_metadata:
+        payload.app_metadata && typeof payload.app_metadata === "object"
+          ? payload.app_metadata
+          : undefined,
+    };
     next();
   });
 }
