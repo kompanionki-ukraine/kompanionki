@@ -83,6 +83,10 @@ export async function signInWithFacebook(): Promise<void> {
   if (error) throw error;
   if (!data.url) throw new Error("Facebook OAuth did not return a URL");
 
+  if (!(await InAppBrowser.isAvailable())) {
+    throw new Error("In-app browser is not available on this device");
+  }
+
   const result = await InAppBrowser.openAuth(data.url, redirectTo);
 
   if (result.type !== "success" || !("url" in result) || !result.url) {

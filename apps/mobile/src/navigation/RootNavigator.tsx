@@ -51,7 +51,7 @@ export default function RootNavigator() {
         if (data.session) {
           dispatch(setCredentials(credentialsFromSession(data.session)));
           try {
-            await syncUserProfile();
+            await syncUserProfile(data.session.access_token);
           } catch (err) {
             console.error("[RootNavigator] syncUserProfile failed on restore:", err);
           }
@@ -74,7 +74,7 @@ export default function RootNavigator() {
       dispatch(setCredentials(credentialsFromSession(nextSession)));
       if (event === "SIGNED_IN") {
         try {
-          await syncUserProfile();
+          await syncUserProfile(nextSession.access_token);
         } catch (err) {
           console.error("[RootNavigator] syncUserProfile failed on sign-in:", err);
         }

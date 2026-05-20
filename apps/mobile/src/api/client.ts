@@ -70,9 +70,11 @@ function defaultApiBaseUrl(): string {
   return "http://localhost:3000";
 }
 
-const trimmedApi = API_BASE_URL?.trim();
+const trimmedApi = API_BASE_URL?.trim().replace(/\/$/, "");
 const BASE_URL = trimmedApi
-  ? trimmedApi.replace(/\/$/, "")
+  ? Platform.OS === "android"
+    ? trimmedApi.replace(/\/\/localhost([:\/])/, "//10.0.2.2$1")
+    : trimmedApi
   : defaultApiBaseUrl();
 
 export const api = createApi({
@@ -99,6 +101,7 @@ export const api = createApi({
   ],
   endpoints: (builder) => ({
     // ── Auth ────────────────────────────────────────────────────────────────
+    // Exchange a refresh token for a new access/refresh pair
     refreshToken: builder.mutation<
       { accessToken: string; refreshToken: string },
       { refreshToken: string }
@@ -107,6 +110,7 @@ export const api = createApi({
     }),
 
     // ── Profile ─────────────────────────────────────────────────────────────
+    // Fetch the authenticated user's own profile
     getMyProfile: builder.query<UserProfile, void>({
       query: () => "/profiles/me",
       transformResponse: (raw: Record<string, unknown>) =>
@@ -114,6 +118,7 @@ export const api = createApi({
       providesTags: ["Profile"],
     }),
 
+    // Create a new user profile during onboarding
     createProfile: builder.mutation<UserProfile, Partial<UserProfile>>({
       query: (body) => ({ url: "/profiles", method: "POST", body }),
       transformResponse: (raw: Record<string, unknown>) =>
@@ -121,6 +126,7 @@ export const api = createApi({
       invalidatesTags: ["Profile"],
     }),
 
+    // Update the authenticated user's profile fields
     updateProfile: builder.mutation<UserProfile, Partial<UserProfile>>({
       query: (body) => ({ url: "/profiles/me", method: "PATCH", body }),
       transformResponse: (raw: Record<string, unknown>) =>
@@ -128,6 +134,7 @@ export const api = createApi({
       invalidatesTags: ["Profile"],
     }),
 
+    // Fetch another user's public profile by ID
     getProfile: builder.query<UserProfile, string>({
       query: (id) => `/profiles/${id}`,
       transformResponse: (raw: Record<string, unknown>) =>
@@ -135,6 +142,7 @@ export const api = createApi({
       providesTags: (_r, _e, id) => [{ type: "Profile", id }],
     }),
 
+    // Paginated discovery feed — browse profiles filtered by intent/city
     getDiscovery: builder.query<
       PaginatedResponse<UserProfile>,
       {
@@ -155,6 +163,7 @@ export const api = createApi({
     }),
 
     // ── Connections ──────────────────────────────────────────────────────────
+    // List the authenticated user's accepted connections (paginated)
     getConnections: builder.query<
       PaginatedResponse<Connection>,
       { page?: number }
@@ -163,11 +172,13 @@ export const api = createApi({
       providesTags: ["Connections"],
     }),
 
+    // List pending incoming connection requests
     getConnectionRequests: builder.query<Connection[], void>({
       query: () => "/connections/requests",
       providesTags: ["Connections"],
     }),
 
+    // Send a connection request to another user
     sendConnection: builder.mutation<
       Connection,
       { recipientId: string; intentContext: string[] }
@@ -176,6 +187,7 @@ export const api = createApi({
       invalidatesTags: ["Connections", "Discovery"],
     }),
 
+    // Accept or decline a pending connection request
     respondConnection: builder.mutation<
       Connection,
       { id: string; status: "accepted" | "declined" }
@@ -188,22 +200,26 @@ export const api = createApi({
       invalidatesTags: ["Connections"],
     }),
 
+    // Block a user — hides them from discovery and connections
     blockUser: builder.mutation<void, { userId: string }>({
       query: (body) => ({ url: "/connections/block", method: "POST", body }),
       invalidatesTags: ["Connections", "Discovery"],
     }),
 
     // ── Conversations ─────────────────────────────────────────────────────
+    // List all conversations for the authenticated user
     getConversations: builder.query<Conversation[], void>({
       query: () => "/conversations",
       providesTags: ["Conversations"],
     }),
 
+    // Start a new 1-on-1 conversation with a connected user
     createConversation: builder.mutation<Conversation, { recipientId: string }>({
       query: (body) => ({ url: "/conversations", method: "POST", body }),
       invalidatesTags: ["Conversations"],
     }),
 
+    // Fetch paginated messages within a conversation
     getMessages: builder.query<
       PaginatedResponse<Message>,
       { conversationId: string; page?: number }
@@ -217,6 +233,7 @@ export const api = createApi({
       ],
     }),
 
+    // Send a text or image message in a conversation
     sendMessage: builder.mutation<
       Message,
       { conversationId: string; content: string; type?: "text" | "image"; mediaUrl?: string }
@@ -233,6 +250,7 @@ export const api = createApi({
     }),
 
     // ── Groups ────────────────────────────────────────────────────────────
+    // Browse/search groups (filter by type, city, or user's own)
     getGroups: builder.query<
       PaginatedResponse<Group>,
       { type?: string; city?: string; mine?: boolean; page?: number }
@@ -241,21 +259,25 @@ export const api = createApi({
       providesTags: ["Groups"],
     }),
 
+    // Fetch a single group's details
     getGroup: builder.query<Group, string>({
       query: (id) => `/groups/${id}`,
       providesTags: (_r, _e, id) => [{ type: "Groups", id }],
     }),
 
+    // Join a group as a member
     joinGroup: builder.mutation<void, string>({
       query: (id) => ({ url: `/groups/${id}/join`, method: "POST" }),
       invalidatesTags: ["Groups"],
     }),
 
+    // Leave a group
     leaveGroup: builder.mutation<void, string>({
       query: (id) => ({ url: `/groups/${id}/leave`, method: "DELETE" }),
       invalidatesTags: ["Groups"],
     }),
 
+    // Fetch paginated posts within a group
     getPosts: builder.query<
       PaginatedResponse<Post>,
       { groupId: string; page?: number }
@@ -267,6 +289,7 @@ export const api = createApi({
       providesTags: (_r, _e, { groupId }) => [{ type: "Posts", id: groupId }],
     }),
 
+    // Create a new post in a group (text + optional media)
     createPost: builder.mutation<
       Post,
       { groupId: string; content: string; mediaUrls?: string[] }
@@ -279,6 +302,7 @@ export const api = createApi({
       invalidatesTags: (_r, _e, { groupId }) => [{ type: "Posts", id: groupId }],
     }),
 
+    // Add an emoji reaction to a post
     reactToPost: builder.mutation<
       void,
       { groupId: string; postId: string; reaction: string }
@@ -291,6 +315,7 @@ export const api = createApi({
       invalidatesTags: (_r, _e, { groupId }) => [{ type: "Posts", id: groupId }],
     }),
 
+    // Fetch all replies (comments) on a post
     getReplies: builder.query<
       PostReply[],
       { groupId: string; postId: string }
@@ -300,6 +325,7 @@ export const api = createApi({
       providesTags: (_r, _e, { postId }) => [{ type: "Posts", id: postId }],
     }),
 
+    // Reply to a post in a group
     createReply: builder.mutation<
       PostReply,
       { groupId: string; postId: string; content: string }
@@ -313,6 +339,7 @@ export const api = createApi({
     }),
 
     // ── Events ────────────────────────────────────────────────────────────
+    // Browse events (filter by city, upcoming flag)
     getEvents: builder.query<
       PaginatedResponse<Event>,
       { city?: string; upcoming?: boolean; page?: number }
@@ -321,11 +348,13 @@ export const api = createApi({
       providesTags: ["Events"],
     }),
 
+    // Fetch a single event's details
     getEvent: builder.query<Event, string>({
       query: (id) => `/events/${id}`,
       providesTags: (_r, _e, id) => [{ type: "Events", id }],
     }),
 
+    // RSVP to an event (going / interested / declined)
     attendEvent: builder.mutation<
       void,
       { eventId: string; status?: "going" | "interested" | "declined" }
@@ -338,6 +367,7 @@ export const api = createApi({
       invalidatesTags: ["Events"],
     }),
 
+    // Cancel RSVP — remove attendance from an event
     unattendEvent: builder.mutation<void, string>({
       query: (eventId) => ({
         url: `/events/${eventId}/attend`,
@@ -347,6 +377,7 @@ export const api = createApi({
     }),
 
     // ── Uploads ──────────────────────────────────────────────────────────
+    // Get a pre-signed URL for direct-to-S3 file upload
     getPresignedUpload: builder.mutation<
       PresignedUploadResponse,
       { purpose: string; contentType: string; size: number }
@@ -355,6 +386,7 @@ export const api = createApi({
     }),
 
     // ── Reports ──────────────────────────────────────────────────────────
+    // Report a user, post, or group for moderation review
     createReport: builder.mutation<
       void,
       {
@@ -368,6 +400,7 @@ export const api = createApi({
     }),
 
     // ── Endorsements ─────────────────────────────────────────────────────
+    // Fetch endorsements received by a user
     getEndorsements: builder.query<Endorsement[], string>({
       query: (userId) => `/profiles/${userId}`,
     }),

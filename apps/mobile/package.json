@@ -5,7 +5,7 @@
   "scripts": {
     "android": "dotenvx run -fk ../../.env.keys -f .env.development -- react-native run-android --port 9087 --no-packager",
     "pod-install": "cd ios && bundle exec pod install",
-    "ios": "dotenvx run -fk ../../.env.keys -f .env.development -- react-native run-ios --port 9087 --no-packager --simulator \"iPhone 16 Pro\"",
+    "ios": "dotenvx run -fk ../../.env.keys -f .env.development -- react-native run-ios --port 9087 --no-packager",
     "ios:device": "bash scripts/write-metro-host-ip.sh && dotenvx run -fk ../../.env.keys -f .env.development -- react-native run-ios --port 9087 --no-packager --device",
     "start": "dotenvx run -fk ../../.env.keys -f .env.development -- react-native start --port 9087",
     "dev": "dotenvx run -fk ../../.env.keys -f .env.development -- react-native start --port 9087",

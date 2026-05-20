@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(adb devices:*)",
+      "Bash(npx tsc:*)",
+      "Bash(find /Users/Svitlana_Korostelova/kompanionki -maxdepth 3 -name *.json)",
+      "Bash(xcrun xctrace:*)",
+      "Bash(npm run:*)"
+    ]
+  }
+}
