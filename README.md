@@ -47,17 +47,20 @@ kompanionki/
 npm install
 ```
 
-### 2. Configure the API (dotenvx)
+### 2. Configure dotenvx (API + mobile)
 
-Scripts load **`apps/api/.env.development`** via [**dotenvx**](https://github.com/dotenvx/dotenvx) (`npm run api`, migrations, seed). Encrypted values need a **private key on each machine** — **`apps/api/.env.keys`** is gitignored and must not be committed.
+Scripts load **`apps/api/.env.development`** and **`apps/mobile/.env.development`** via [**dotenvx**](https://github.com/dotenvx/dotenvx). Use **one** gitignored key file at the **repository root** so developers do not maintain separate keys per app:
 
-Get **`DOTENV_PRIVATE_KEY_DEVELOPMENT`** from your team (1Password, Slack DM to lead, etc.), then from the **repository root**:
+**`.env.keys`** (never commit) — same directory as **`package.json`** at the repo root.
 
 ```bash
-echo 'DOTENV_PRIVATE_KEY_DEVELOPMENT="paste-key-here"' > apps/api/.env.keys
+# From the repository root — one file for the whole monorepo
+echo 'DOTENV_PRIVATE_KEY_DEVELOPMENT="paste-key-here"' > .env.keys
 ```
 
-If you work inside **`apps/api`**, use **`>.env.keys`** instead of **`apps/api/.env.keys`**.
+Add **`DOTENV_PRIVATE_KEY_PRODUCTION`** to the same file when you deploy with **`.env.production`**. NPM scripts pass **`-fk ../../.env.keys`** from **`apps/api`** and **`apps/mobile`** so both resolve this file.
+
+**Important:** `apps/api/.env.development` and **`apps/mobile/.env.development`** must be encrypted with that **same** development key. If one file was encrypted with another keypair, re-encrypt it after **`dotenvx set`** / **`dotenvx encrypt`** using this root **`.env.keys`**, or share one team key from the start.
 
 **Migrations and `DIRECT_URL`:** Prisma runs `migrate dev` / `migrate deploy` against `DIRECT_URL` (see `apps/api/prisma/schema.prisma`). If you see `P1001` and the message mentions `db.[project-ref].supabase.co:5432`, your network cannot reach Supabase’s direct host. In the Supabase dashboard open **Settings → Database → Connection string**, choose **Session pooler** (host like `aws-0-….pooler.supabase.com`, port **5432**, user `postgres.[project-ref]`), append `?sslmode=require` if needed, and set that full URI as **`DIRECT_URL`**. Keep **`DATABASE_URL`** as the **Transaction pooler** URI (port **6543**) for normal API queries.
 
@@ -75,6 +78,8 @@ npm run api
 For a production-style local run (build then `node dist`): `npm run api:prod`.
 
 ### 5. Run the mobile app
+
+Create **`apps/mobile/.env.development`** with Supabase / Google values (see **`apps/mobile/README.md`** — Environment variables). **`npm start`**, **`npm run ios`**, and **`npm run android`** load that file via **`dotenvx`** using the **repo-root** **`.env.keys`** (§2 above), same as the API.
 
 **iOS:**
 ```bash

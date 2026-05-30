@@ -6,6 +6,7 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 
 import authRouter from "./routes/auth";
+import usersRouter from "./routes/users";
 import profilesRouter from "./routes/profiles";
 import connectionsRouter from "./routes/connections";
 import conversationsRouter from "./routes/conversations";
@@ -55,11 +56,20 @@ const authLimiter = rateLimit({
   message: { error: "Too many auth attempts" },
 });
 
+// Tighter limit for DB-write sync endpoint (30 req / 15 min per IP)
+const syncLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: { error: "Too many sync requests" },
+});
+
 app.use("/api/v1", defaultLimiter);
 app.use("/api/v1/auth", authLimiter);
+app.use("/api/v1/users", syncLimiter);
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/profiles", profilesRouter);
 app.use("/api/v1/connections", connectionsRouter);
 app.use("/api/v1/conversations", conversationsRouter);

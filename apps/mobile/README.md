@@ -4,6 +4,25 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
 
 > **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
 
+## Environment variables (`dotenvx`)
+
+1. Create **`apps/mobile/.env.development`** locally (do not commit secrets; encrypted files are team policy) with at least:
+
+```bash
+SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+SUPABASE_ANON_KEY=
+GOOGLE_WEB_CLIENT_ID=
+GOOGLE_IOS_CLIENT_ID=
+OAUTH_REDIRECT_URL=kompanionki://auth-callback
+API_BASE_URL=http://localhost:3000
+```
+
+(Supabase keys: Dashboard → Settings → API. Google: OAuth client IDs. Android emulator API host often **`http://10.0.2.2:3000`** — override **`API_BASE_URL`** or leave empty for code defaults.)
+
+2. **`npm start`** / **`npm run ios`** / **`npm run android`** run via **`dotenvx run -fk ../../.env.keys -f .env.development`**, which loads that file into the Node process before Metro bundles your JS. Babel inlines the listed keys into the bundle (see **`babel.config.js`** + **`src/config/publicEnv.ts`**).
+3. **Team workflow (encrypted files):** Use **one** repo-root **`.env.keys`** (see root **`README.md`** §2). NPM scripts use **`-fk ../../.env.keys`** so API and mobile share **`DOTENV_PRIVATE_KEY_DEVELOPMENT`** — no second `.env.keys` under **`apps/mobile`**.
+4. To edit encrypted vars: **`npx dotenvx set KEY "value" -fk ../../.env.keys -f apps/mobile/.env.development`** (run from repo root or adjust paths), or **`dotenvx encrypt`** after editing plain text locally.
+
 ## Step 1: Start Metro
 
 First, you will need to run **Metro**, the JavaScript build tool for React Native.
@@ -48,7 +67,7 @@ For more information, please visit [CocoaPods Getting Started guide](https://gui
 npm run ios
 ```
 
-**Simulator vs device:** **`npm run ios`** targets the **iOS Simulator** by default (currently **`iPhone 17`** in `package.json`) so you do not need Apple signing for everyday CLI runs. To run on a **physical iPhone**, use **`npm run ios:device`** after configuring **Signing & Capabilities** in Xcode for the Kompanionki target (Team + provisioning). Override the simulator: `npm run ios -- --simulator "iPhone 16 Pro"` (use names from `xcrun simctl list devices available`).
+**Simulator vs device:** **`npm run ios`** targets the **iOS Simulator** by default (currently **`iPhone 16 Pro`** in `package.json`). To run on a **physical iPhone** (USB): configure **Signing & Capabilities** in Xcode for the **Kompanionki** target (**Team**), unlock the phone, trust the computer if prompted, then start Metro (`npm start`) and run **`npm run ios:device`**. That script writes your Mac’s LAN IP into **`ios/Kompanionki/ip.txt`** so the phone can load JS from Metro on port **9087** — **iPhone and Mac must be on the same Wi‑Fi** (USB alone does not forward Metro). For API calls from the device, set **`API_BASE_URL`** to `http://YOUR_MAC_LAN_IP:3000`, not `localhost`. Override the simulator: `npm run ios -- --simulator "iPhone 16 Pro"` (names from `xcrun simctl list devices available`).
 
 If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
 

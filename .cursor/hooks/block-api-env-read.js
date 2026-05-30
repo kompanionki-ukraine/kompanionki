@@ -4,8 +4,8 @@
  * files under .../api/ that may contain real secrets:
  *   - apps/api/.env, .env.local
  *   - apps/api/.env.production[.local], .env.development[.local], .env.staging[.local]
- *   - apps/api/.env.keys  (dotenvx private decryption keys — most critical)
- * Stays readable: .env.example, .env.*.example, .env.vault.
+ *   Note: team decryption keys live at repo-root `.env.keys` (not under apps/api/).
+ * Stays readable: .env.*.example, .env.vault.
  */
 async function main() {
   const chunks = [];
