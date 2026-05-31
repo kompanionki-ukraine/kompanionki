@@ -78,6 +78,16 @@ app.use("/api/v1/events", eventsRouter);
 app.use("/api/v1/uploads", uploadsRouter);
 app.use("/api/v1/reports", reportsRouter);
 
+// Dev-only routes. Imported lazily so the module is never even evaluated in
+// production builds — prevents the hardcoded fallback secret in routes/dev.ts
+// from being loaded into memory on prod hosts. See routes/dev.ts for full
+// production hardening TODOs.
+if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const devRouter = require("./routes/dev").default;
+  app.use("/api/v1/dev", devRouter);
+}
+
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 // ─── Error handler ────────────────────────────────────────────────────────────

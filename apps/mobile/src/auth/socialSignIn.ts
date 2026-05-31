@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import InAppBrowser from "react-native-inappbrowser-reborn";
-import appleAuth, { AppleAuthError } from "@invertase/react-native-apple-authentication";
+import appleAuth, { AppleError } from "@invertase/react-native-apple-authentication";
 import {
   GOOGLE_IOS_CLIENT_ID,
   GOOGLE_WEB_CLIENT_ID,
@@ -60,13 +60,22 @@ export async function signInWithApple(): Promise<void> {
     });
     if (error) throw error;
   } catch (e: unknown) {
-    if ((e as { code?: string })?.code === AppleAuthError.CANCELED) return;
+    if ((e as { code?: string })?.code === AppleError.CANCELED) return;
     throw e;
   }
 }
 
 export function isAppleSignInAvailable(): boolean {
   return Platform.OS === "ios" && appleAuth.isSupported;
+}
+
+export async function signOutSocial(): Promise<void> {
+  if (!googleConfigured) return;
+  try {
+    await GoogleSignin.signOut();
+  } catch {
+    // user may not have signed in with Google; ignore
+  }
 }
 
 export async function signInWithFacebook(): Promise<void> {

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Linking, StatusBar, StyleSheet, Text, View } from "react-native";
+import { AppState, Linking, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Provider } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
@@ -10,6 +10,8 @@ import RootNavigator from "./navigation/RootNavigator";
 import "./i18n";
 import { configureGoogleSignIn } from "./auth/socialSignIn";
 import { applyOAuthCallbackUrl } from "./auth/oauthSession";
+import { supabase } from "./lib/supabase";
+import DevTrigger from "./components/DevTrigger";
 import { colors, spacing } from "./theme";
 
 const BANNER_DURATION_MS = 4000;
@@ -47,6 +49,47 @@ function AppContent(): React.JSX.Element {
     };
   }, [t]);
 
+  // Keep Supabase access tokens fresh across app foreground/background transitions.
+  // RN suspends setInterval when backgrounded, so Supabase's internal auto-refresh
+  // misses ticks. Toggling it on AppState guarantees the token is re-checked the
+  // moment the user returns — no "Invalid or expired token" on resume.
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        supabase.auth.startAutoRefresh();
+      } else {
+        supabase.auth.stopAutoRefresh();
+      }
+    });
+    if (AppState.currentState === "active") {
+      supabase.auth.startAutoRefresh();
+    }
+
+    // PRODUCTION: report auth lifecycle to your error tracker (Sentry/Crashlytics).
+    // Useful to detect refresh-token revocations, hijack attempts, mass sign-outs.
+    // const authSub = supabase.auth.onAuthStateChange((event) => {
+    //   if (event === "SIGNED_OUT" || event === "USER_DELETED" || event === "TOKEN_REFRESHED") {
+    //     Sentry.addBreadcrumb({ category: "auth", message: event, level: "info" });
+    //   }
+    // });
+
+    // PRODUCTION: force a full session refresh after long backgrounding (e.g. >24h)
+    // to surface server-side revocation immediately instead of on the next API call.
+    // const lastActiveRef = { current: Date.now() };
+    // const longResumeSub = AppState.addEventListener("change", async (state) => {
+    //   if (state === "active" && Date.now() - lastActiveRef.current > 24 * 60 * 60 * 1000) {
+    //     await supabase.auth.refreshSession();
+    //   }
+    //   if (state !== "active") lastActiveRef.current = Date.now();
+    // });
+
+    return () => {
+      sub.remove();
+      // authSub.data.subscription.unsubscribe();
+      // longResumeSub.remove();
+    };
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
@@ -55,6 +98,7 @@ function AppContent(): React.JSX.Element {
           <NavigationContainer>
             <RootNavigator />
           </NavigationContainer>
+          <DevTrigger />
           {bannerMessage ? (
             <View style={styles.banner} pointerEvents="none">
               <Text style={styles.bannerText}>{bannerMessage}</Text>
