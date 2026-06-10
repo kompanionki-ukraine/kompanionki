@@ -1,12 +1,12 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import type { DiscoverStackParamList } from "../types";
-import DiscoveryScreen from "../../screens/main/DiscoveryScreen";
-import { colors } from "../../theme";
+import type { DiscoverStackParamList } from "@/navigation/types";
+import DiscoveryScreen from "@/screens/main/DiscoveryScreen";
+import { colors } from "@/theme";
 
 const Stack = createNativeStackNavigator<DiscoverStackParamList>();
 
-export default function DiscoverStack() {
+const DiscoverStack = () => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -23,4 +23,6 @@ export default function DiscoverStack() {
       />
     </Stack.Navigator>
   );
-}
+};
+
+export default DiscoverStack;

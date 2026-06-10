@@ -14,6 +14,8 @@ export const DEV_FLAG_KEYS = [
   "mockApiResponses",
   "enableAppleIDSignIn",
   "enableFacebookSignIn",
+  "languageEN",
+  "darkMode",
 ] as const;
 
 export type DevFlagKey = (typeof DEV_FLAG_KEYS)[number];

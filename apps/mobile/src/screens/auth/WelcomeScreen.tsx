@@ -1,13 +1,13 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from "react-native";
+import { View, Text, Pressable, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import type { AuthScreenProps } from "../../navigation/types";
-import Logo from "../../components/ui/Logo";
-import { colors, typography, spacing, radius } from "../../theme";
+import type { AuthScreenProps } from "@/navigation/types";
+import Logo from "@/components/ui/Logo";
+import { colors } from "@/theme";
+import { styles } from "./WelcomeScreen.styles";
 
-/** OTP flow removed; kept for navigation typing if AuthStack is used. */
-export default function WelcomeScreen({ navigation }: AuthScreenProps<"Welcome">) {
+const WelcomeScreen = ({ navigation }: AuthScreenProps<"Welcome">) => {
   const { t } = useTranslation();
 
   return (
@@ -21,14 +21,14 @@ export default function WelcomeScreen({ navigation }: AuthScreenProps<"Welcome">
         </View>
 
         <View style={styles.footer}>
-          <TouchableOpacity
-            style={styles.primaryButton}
+          <Pressable
+            style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
             onPress={() => navigation.navigate("PhoneInput")}
           >
             <Text style={styles.primaryButtonText}>{t("onboarding.getStarted")}</Text>
-          </TouchableOpacity>
+          </Pressable>
           <Text style={styles.disclaimer}>
-            Тільки для жінок • Без реклами • Без романтики
+            {`Тільки для жінок \u2022 Без реклами \u2022 Без романтики`}
           </Text>
         </View>
       </View>
@@ -36,40 +36,4 @@ export default function WelcomeScreen({ navigation }: AuthScreenProps<"Welcome">
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
-  container: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    justifyContent: "space-between",
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.lg,
-  },
-  hero: { alignItems: "center", gap: spacing.sm },
-  logo: { marginBottom: spacing.sm },
-  title: { ...typography.heading1, color: colors.text },
-  tagline: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: "center",
-    maxWidth: 260,
-  },
-  footer: { gap: spacing.md },
-  primaryButton: {
-    backgroundColor: colors.secondary,
-    borderRadius: radius.full,
-    paddingVertical: spacing.md,
-    alignItems: "center",
-  },
-  primaryButtonText: {
-    ...typography.body,
-    fontWeight: "700",
-    color: colors.textInverse,
-    fontSize: 17,
-  },
-  disclaimer: {
-    ...typography.caption,
-    color: colors.textMuted,
-    textAlign: "center",
-  },
-});
+export default WelcomeScreen;

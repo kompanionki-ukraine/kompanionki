@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
-import { api } from "../api/client";
+import { api } from "@/api/client";
 import sessionReducer from "./sessionSlice";
 import uiReducer from "./uiSlice";
 import devFlagsReducer from "./devFlagsSlice";

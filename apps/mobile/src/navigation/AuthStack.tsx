@@ -1,18 +1,18 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "./types";
-import WelcomeScreen from "../screens/auth/WelcomeScreen";
-import PhoneInputScreen from "../screens/auth/PhoneInputScreen";
-import OtpVerifyScreen from "../screens/auth/OtpVerifyScreen";
-import OnboardingStep1Screen from "../screens/auth/OnboardingStep1Screen";
-import OnboardingStep2Screen from "../screens/auth/OnboardingStep2Screen";
-import OnboardingStep3Screen from "../screens/auth/OnboardingStep3Screen";
-import OnboardingStep4Screen from "../screens/auth/OnboardingStep4Screen";
-import OnboardingStep5Screen from "../screens/auth/OnboardingStep5Screen";
+import WelcomeScreen from "@/screens/auth/WelcomeScreen";
+import PhoneInputScreen from "@/screens/auth/PhoneInputScreen";
+import OtpVerifyScreen from "@/screens/auth/OtpVerifyScreen";
+import OnboardingStep1Screen from "@/screens/auth/OnboardingStep1Screen";
+import OnboardingStep2Screen from "@/screens/auth/OnboardingStep2Screen";
+import OnboardingStep3Screen from "@/screens/auth/OnboardingStep3Screen";
+import OnboardingStep4Screen from "@/screens/auth/OnboardingStep4Screen";
+import OnboardingStep5Screen from "@/screens/auth/OnboardingStep5Screen";
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
-export default function AuthStack() {
+const AuthStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
@@ -25,4 +25,6 @@ export default function AuthStack() {
       <Stack.Screen name="OnboardingStep5" component={OnboardingStep5Screen} />
     </Stack.Navigator>
   );
-}
+};
+
+export default AuthStack;

@@ -1844,6 +1844,27 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - RNLocalize (3.7.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - RNScreens (4.24.0):
     - hermes-engine
     - RCTRequired
@@ -2036,6 +2057,7 @@ DEPENDENCIES:
   - "RNGoogleSignin (from `../../../node_modules/@react-native-google-signin/google-signin`)"
   - RNInAppBrowser (from `../../../node_modules/react-native-inappbrowser-reborn`)
   - RNKeychain (from `../../../node_modules/react-native-keychain`)
+  - RNLocalize (from `../../../node_modules/react-native-localize`)
   - RNScreens (from `../../../node_modules/react-native-screens`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - RNVectorIcons (from `../../../node_modules/react-native-vector-icons`)
@@ -2211,6 +2233,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-inappbrowser-reborn"
   RNKeychain:
     :path: "../../../node_modules/react-native-keychain"
+  RNLocalize:
+    :path: "../../../node_modules/react-native-localize"
   RNScreens:
     :path: "../../../node_modules/react-native-screens"
   RNSVG:
@@ -2307,6 +2331,7 @@ SPEC CHECKSUMS:
   RNGoogleSignin: 6ae05c2fcaccf0703e609d942a902a2627a51852
   RNInAppBrowser: b53e6f6072c931115bc22ac9dc9510ac2cbea62d
   RNKeychain: ea0a8d2f098549aff74439095d32adb57bb75940
+  RNLocalize: f58affe87ebc5d779d8c314b79bb7d348d74bf82
   RNScreens: 8c846783cda52889bbf9c69e71ff0f2ed1187743
   RNSVG: 7759a4a66981b78eabb18018ddc1dbfc107315b5
   RNVectorIcons: cb1f35b22fd51bca0f4d44556ee2ac3c95d0b472

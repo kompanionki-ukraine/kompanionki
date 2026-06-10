@@ -8,6 +8,8 @@
 import React from "react";
 import ReactTestRenderer, { act } from "react-test-renderer";
 import { Alert, TouchableOpacity } from "react-native";
+import { Provider } from "react-redux";
+import { store } from "../../src/store";
 
 import SocialRegistrationScreen from "../../src/screens/auth/SocialRegistrationScreen";
 import {
@@ -17,6 +19,7 @@ import {
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
+  initReactI18next: { type: "3rdParty", init: jest.fn() },
 }));
 
 jest.mock("react-native-safe-area-context", () => {
@@ -35,7 +38,11 @@ const mockIsAppleSignInAvailable = isAppleSignInAvailable as jest.Mock;
 function render() {
   let renderer!: ReactTestRenderer.ReactTestRenderer;
   act(() => {
-    renderer = ReactTestRenderer.create(<SocialRegistrationScreen />);
+    renderer = ReactTestRenderer.create(
+      <Provider store={store}>
+        <SocialRegistrationScreen />
+      </Provider>
+    );
   });
   return renderer;
 }

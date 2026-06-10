@@ -1,5 +1,5 @@
-import { supabase } from "../lib/supabase";
-import { getApiBaseUrl } from "../config/apiBaseUrl";
+import { supabase } from "@/lib/supabase";
+import { getApiBaseUrl } from "@/config/apiBaseUrl";
 
 /**
  * Upserts the Prisma `users` row via backend API.

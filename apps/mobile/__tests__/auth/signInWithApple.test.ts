@@ -18,7 +18,7 @@ jest.mock("@invertase/react-native-apple-authentication", () => ({
     Scope: { EMAIL: 0, FULL_NAME: 1 },
     performRequest: jest.fn(),
   },
-  AppleAuthError: {
+  AppleError: {
     UNKNOWN: "1000",
     CANCELED: "1001",
     INVALID_RESPONSE: "1002",

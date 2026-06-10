@@ -5,50 +5,41 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { handleError } from "@/utils/errorHandler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { colors, radius, spacing, typography } from "../../theme";
-import { isSupabaseConfigured } from "../../lib/supabase";
+import { colors, typography } from "@/theme";
+import { styles } from "./SocialRegistrationScreen.styles";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import {
   isAppleSignInAvailable,
   signInWithApple,
   signInWithFacebook,
   signInWithGoogle,
-} from "../../auth/socialSignIn";
-import { useAppSelector } from "../../store";
+} from "@/auth/socialSignIn";
+import { useAppSelector } from "@/store";
 import {
   resendSignupOtp,
   signInWithEmail,
   signUpWithEmail,
   verifySignupOtp,
-} from "../../auth/emailAuth";
-
-type EmailBusy = "email" | "otpVerify" | "otpResend" | null;
-type SocialBusy = "apple" | "google" | "facebook" | null;
-type Mode = "register" | "signIn" | "awaitingOtp";
+} from "@/auth/emailAuth";
+import type { EmailBusy, SocialBusy, SocialRegistrationMode } from "@/types/auth";
+import { isValidEmail, isValidPassword } from "@/utils/validation";
 
 const OTP_RESEND_SECONDS = 60;
 const OTP_LENGTH = 6;
 
-function isValidEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-}
-
-function isValidPassword(value: string): boolean {
-  return value.length >= 6;
-}
-
-export default function SocialRegistrationScreen(): React.JSX.Element {
+const SocialRegistrationScreen = (): React.JSX.Element => {
   const { t } = useTranslation();
 
-  const [mode, setMode] = useState<Mode>("register");
+  const [mode, setMode] = useState<SocialRegistrationMode>("register");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailTouched, setEmailTouched] = useState(false);
@@ -136,8 +127,7 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
         await signInWithEmail(email.trim(), password);
       }
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      Alert.alert(t("auth.signInFailedTitle"), msg);
+      handleError(e, { title: t("auth.signInFailedTitle") });
     } finally {
       setEmailBusy(null);
     }
@@ -152,8 +142,7 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
       await verifySignupOtp(otpEmail, otpCode);
       // RootNavigator's onAuthStateChange will pick up the new session.
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      Alert.alert(t("auth.emailOtpInvalidTitle"), msg);
+      handleError(e, { title: t("auth.emailOtpInvalidTitle") });
     } finally {
       setEmailBusy(null);
     }
@@ -171,8 +160,7 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
         t("auth.emailOtpResentBody", { email: otpEmail })
       );
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      Alert.alert(t("auth.signInFailedTitle"), msg);
+      handleError(e, { title: t("auth.signInFailedTitle") });
     } finally {
       setEmailBusy(null);
     }
@@ -196,8 +184,7 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
       try {
         await fn();
       } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e);
-        Alert.alert(t("auth.signInFailedTitle"), msg);
+        handleError(e, { title: t("auth.signInFailedTitle") });
       } finally {
         setSocialBusy(null);
       }
@@ -252,11 +239,12 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
               />
             </View>
 
-            <TouchableOpacity
-              style={[
+            <Pressable
+              style={({ pressed }) => [
                 styles.btn,
                 styles.btnPrimary,
                 (!codeReady || busy) && styles.btnDisabled,
+                pressed && styles.pressed,
               ]}
               onPress={handleVerifyOtp}
               disabled={!codeReady || busy}
@@ -269,13 +257,14 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
                   {t("auth.emailOtpVerifyBtn")}
                 </Text>
               )}
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
-              style={[
+            <Pressable
+              style={({ pressed }) => [
                 styles.btn,
                 styles.btnOutline,
                 (resendCooldown > 0 || busy) && styles.btnDisabled,
+                pressed && styles.pressed,
               ]}
               onPress={handleResendOtp}
               disabled={resendCooldown > 0 || busy}
@@ -290,15 +279,15 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
                     : t("auth.emailOtpResendBtn")}
                 </Text>
               )}
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
-              style={styles.switchRow}
+            <Pressable
+              style={({ pressed }) => [styles.switchRow, pressed && styles.pressed]}
               onPress={handleBackFromOtp}
               disabled={busy}
             >
               <Text style={styles.switchText}>{t("auth.emailOtpBackBtn")}</Text>
-            </TouchableOpacity>
+            </Pressable>
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -374,8 +363,8 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
                   returnKeyType="done"
                   onSubmitEditing={handleEmailSubmit}
                 />
-                <TouchableOpacity
-                  style={styles.eyeBtn}
+                <Pressable
+                  style={({ pressed }) => [styles.eyeBtn, pressed && styles.pressed]}
                   onPress={() => setShowPassword((v) => !v)}
                   accessibilityLabel={
                     showPassword ? t("auth.hidePassword") : t("auth.showPassword")
@@ -384,15 +373,15 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
                   <Text style={styles.eyeText}>
                     {showPassword ? t("auth.hide") : t("auth.show")}
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
               {showPasswordError && (
                 <Text style={styles.errorText}>{t("errors.passwordTooShort")}</Text>
               )}
             </View>
 
-            <TouchableOpacity
-              style={[styles.btn, styles.btnPrimary, busy && styles.btnDisabled]}
+            <Pressable
+              style={({ pressed }) => [styles.btn, styles.btnPrimary, busy && styles.btnDisabled, pressed && styles.pressed]}
               onPress={handleEmailSubmit}
               disabled={busy}
               accessibilityRole="button"
@@ -404,7 +393,7 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
                   {mode === "register" ? t("auth.registerBtn") : t("auth.signInBtn")}
                 </Text>
               )}
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Section 2 — social auth */}
@@ -416,8 +405,8 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
             <View style={styles.socialGroup}>
               {enableAppleIDSignIn && (
                 showApple ? (
-                  <TouchableOpacity
-                    style={[styles.btn, styles.btnApple]}
+                  <Pressable
+                    style={({ pressed }) => [styles.btn, styles.btnApple, pressed && styles.pressed]}
                     disabled={busy}
                     onPress={() => runSocial("apple", signInWithApple)}
                     accessibilityRole="button"
@@ -429,7 +418,7 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
                         {mode === "register" ? t("auth.continueApple") : t("auth.signInApple")}
                       </Text>
                     )}
-                  </TouchableOpacity>
+                  </Pressable>
                 ) : (
                   <View style={[styles.btn, styles.btnMuted]} accessibilityElementsHidden>
                     <Text style={styles.btnLabelMuted}>
@@ -440,8 +429,8 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
                 )
               )}
 
-              <TouchableOpacity
-                style={[styles.btn, styles.btnGoogle]}
+              <Pressable
+                style={({ pressed }) => [styles.btn, styles.btnGoogle, pressed && styles.pressed]}
                 disabled={busy}
                 onPress={() => runSocial("google", signInWithGoogle)}
                 accessibilityRole="button"
@@ -453,11 +442,11 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
                     {mode === "register" ? t("auth.continueGoogle") : t("auth.signInGoogle")}
                   </Text>
                 )}
-              </TouchableOpacity>
+              </Pressable>
 
               {enableFacebookSignIn && (
-                <TouchableOpacity
-                  style={[styles.btn, styles.btnFacebook]}
+                <Pressable
+                  style={({ pressed }) => [styles.btn, styles.btnFacebook, pressed && styles.pressed]}
                   disabled={busy}
                   onPress={() => runSocial("facebook", signInWithFacebook)}
                   accessibilityRole="button"
@@ -469,14 +458,14 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
                       {mode === "register" ? t("auth.continueFacebook") : t("auth.signInFacebook")}
                     </Text>
                   )}
-                </TouchableOpacity>
+                </Pressable>
               )}
             </View>
           </View>
 
           {/* Mode switch */}
-          <TouchableOpacity
-            style={styles.switchRow}
+          <Pressable
+            style={({ pressed }) => [styles.switchRow, pressed && styles.pressed]}
             onPress={toggleMode}
             disabled={busy}
           >
@@ -485,172 +474,11 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
                 ? t("auth.switchToSignIn")
                 : t("auth.switchToRegister")}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: "#EBEBEB",
-  },
-  flex: {
-    flex: 1,
-  },
-  scroll: {
-    flexGrow: 1,
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxl,
-  },
-  header: {
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.lg,
-  },
-  title: {
-    color: colors.text,
-    textAlign: "center",
-  },
-  subtitle: {
-    color: colors.textSecondary,
-    textAlign: "center",
-    marginTop: spacing.xs,
-  },
-  section: {
-    backgroundColor: "#F5F5F5",
-    borderRadius: radius.lg,
-    padding: spacing.md,
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  sectionTitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
-  fieldGroup: {
-    marginBottom: spacing.md,
-  },
-  fieldLabel: {
-    ...typography.label,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  input: {
-    height: 52,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    paddingHorizontal: spacing.md,
-    ...typography.body,
-    color: colors.text,
-  },
-  inputError: {
-    borderColor: colors.error,
-  },
-  otpInput: {
-    textAlign: "center",
-    letterSpacing: 8,
-    fontSize: 22,
-  },
-  errorText: {
-    ...typography.caption,
-    color: colors.error,
-    marginTop: spacing.xs,
-  },
-  passwordRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  passwordInput: {
-    flex: 1,
-    paddingRight: 60,
-  },
-  eyeBtn: {
-    position: "absolute",
-    right: spacing.md,
-    height: 52,
-    justifyContent: "center",
-  },
-  eyeText: {
-    ...typography.label,
-    color: colors.textSecondary,
-  },
-  btn: {
-    minHeight: 52,
-    borderRadius: radius.md,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: spacing.md,
-  },
-  btnPrimary: {
-    backgroundColor: colors.secondary,
-    marginTop: spacing.sm,
-  },
-  btnDisabled: {
-    opacity: 0.6,
-  },
-  btnOutline: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    marginTop: spacing.sm,
-  },
-  btnLabelOutline: {
-    ...typography.label,
-    fontSize: 15,
-    color: colors.textSecondary,
-  },
-  socialGroup: {
-    gap: spacing.sm,
-  },
-  btnApple: {
-    backgroundColor: "#000000",
-  },
-  btnGoogle: {
-    backgroundColor: colors.surface,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-  },
-  btnFacebook: {
-    backgroundColor: "#1877F2",
-  },
-  btnLabel: {
-    ...typography.label,
-    fontSize: 16,
-    color: colors.text,
-  },
-  btnLabelOnDark: {
-    color: colors.textInverse,
-  },
-  btnMuted: {
-    backgroundColor: colors.surfaceAlt,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-    minHeight: 56,
-    paddingVertical: spacing.xs,
-  },
-  btnLabelMuted: {
-    ...typography.label,
-    fontSize: 15,
-    color: colors.textMuted,
-    textAlign: "center",
-  },
-  hintSmall: {
-    ...typography.caption,
-    color: colors.textMuted,
-    textAlign: "center",
-    marginTop: 2,
-  },
-  switchRow: {
-    alignItems: "center",
-    paddingVertical: spacing.md,
-  },
-  switchText: {
-    ...typography.bodySmall,
-    color: colors.secondary,
-  },
-});
+export default SocialRegistrationScreen;

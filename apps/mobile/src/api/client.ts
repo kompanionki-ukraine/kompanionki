@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Platform } from "react-native";
-import { API_BASE_URL } from "../config/publicEnv";
-import type { RootState } from "../store";
+import { API_BASE_URL } from "@/config/publicEnv";
+import type { RootState } from "@/store";
 import type {
   Intent,
   UserProfile,
@@ -37,8 +37,13 @@ function normalizeProfile(raw: Record<string, unknown>): UserProfile {
         ? updatedAt.toISOString()
         : String(updatedAt ?? "");
 
+  const id = raw.userId ?? raw.id;
+  if (id == null) {
+    throw new Error("normalizeProfile: missing required id (userId / id)");
+  }
+
   return {
-    id: String(raw.userId ?? raw.id ?? ""),
+    id: String(id),
     displayName: String(raw.displayName ?? ""),
     birthYear: Number(raw.birthYear ?? 0),
     bio: raw.bio != null ? String(raw.bio) : "",
@@ -411,7 +416,7 @@ export const api = createApi({
     // ── Endorsements ─────────────────────────────────────────────────────
     // Fetch endorsements received by a user
     getEndorsements: builder.query<Endorsement[], string>({
-      query: (userId) => `/profiles/${userId}`,
+      query: (userId) => `/profiles/${userId}/endorsements`,
     }),
   }),
 });

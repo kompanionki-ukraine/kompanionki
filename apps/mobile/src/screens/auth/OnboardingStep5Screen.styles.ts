@@ -1,0 +1,72 @@
+import { StyleSheet } from "react-native";
+import { colors, typography, spacing, radius } from "@/theme";
+import { screenPadding } from "@/styles/layout";
+
+export const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, ...screenPadding, paddingVertical: spacing.lg, gap: spacing.lg },
+  title: { ...typography.heading2, color: colors.text },
+  subtitle: { ...typography.body, color: colors.textSecondary },
+  avatarContainer: { alignItems: "center", gap: spacing.md, marginTop: spacing.xl },
+  avatar: { width: 120, height: 120, borderRadius: 60 },
+  avatarPlaceholder: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: colors.surfaceAlt,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderStyle: "dashed",
+  },
+  avatarPlaceholderText: { fontSize: 40 },
+  uploadButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.full,
+    borderWidth: 1.5,
+    borderColor: colors.secondary,
+  },
+  uploadButtonText: { ...typography.label, color: colors.secondary },
+  uploadHint: { ...typography.caption, color: colors.textMuted },
+  preview: {
+    marginTop: spacing.xl,
+    padding: spacing.lg,
+    backgroundColor: colors.primary + "18",
+    borderRadius: radius.lg,
+    gap: spacing.xs,
+  },
+  previewLabel: { ...typography.label, color: colors.text },
+  previewText: { ...typography.body, color: colors.textSecondary },
+  footer: {
+    flexDirection: "row",
+    gap: spacing.md,
+    padding: spacing.lg,
+    paddingBottom: spacing.xl,
+  },
+  back: {
+    flex: 1,
+    borderRadius: radius.full,
+    paddingVertical: spacing.md,
+    alignItems: "center",
+    borderWidth: 1.5,
+    borderColor: colors.border,
+  },
+  backText: { ...typography.body, color: colors.text, fontWeight: "600" },
+  button: {
+    flex: 2,
+    backgroundColor: colors.secondary,
+    borderRadius: radius.full,
+    paddingVertical: spacing.md,
+    alignItems: "center",
+  },
+  buttonDisabled: { opacity: 0.45 },
+  pressed: { opacity: 0.7 },
+  buttonText: {
+    ...typography.body,
+    fontWeight: "700",
+    color: colors.textInverse,
+    fontSize: 17,
+  },
+});

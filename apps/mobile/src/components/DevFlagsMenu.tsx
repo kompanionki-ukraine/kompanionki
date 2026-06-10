@@ -3,23 +3,38 @@ import {
   Modal,
   View,
   Text,
-  TouchableOpacity,
-  StyleSheet,
   Pressable,
   ScrollView,
   Switch,
   Share,
   Alert,
 } from "react-native";
-import { useAppDispatch, useAppSelector } from "../store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import {
   DEV_FLAG_KEYS,
   DevFlagKey,
   resetDevFlags,
   setDevFlag,
-} from "../store/devFlagsSlice";
-import { colors, typography, spacing, radius } from "../theme";
-import { readLogs, clearLogs } from "../utils/logger";
+} from "@/store/devFlagsSlice";
+import { colors, spacing } from "@/theme";
+import { styles } from "./DevFlagsMenu.styles";
+import { readLogs, clearLogs } from "@/utils/logger";
+
+const FLAG_LABELS: Record<DevFlagKey, string> = {
+  verboseLogging: "Verbose Logging",
+  skipOnboarding: "Skip Onboarding",
+  mockApiResponses: "Mock API Responses",
+  enableAppleIDSignIn: "Apple ID Sign-In",
+  enableFacebookSignIn: "Facebook Sign-In",
+  languageEN: "Language",
+  darkMode: "Theme",
+};
+
+// [off-label, on-label] for flags that aren't simple on/off
+const FLAG_VALUE_HINTS: Partial<Record<DevFlagKey, [string, string]>> = {
+  languageEN: ["UA", "EN"],
+  darkMode: ["Light", "Dark"],
+};
 
 type Props = {
   visible: boolean;
@@ -27,7 +42,7 @@ type Props = {
 };
 
 /** Dev-only feature flag menu. Toggle runtime debug behaviors. */
-export default function DevFlagsMenu({ visible, onClose }: Props) {
+const DevFlagsMenu = ({ visible, onClose }: Props) => {
   const dispatch = useAppDispatch();
   const flags = useAppSelector((s) => s.devFlags.flags);
 
@@ -56,9 +71,9 @@ export default function DevFlagsMenu({ visible, onClose }: Props) {
         <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
           <View style={styles.header}>
             <Text style={styles.title}>Dev Flags</Text>
-            <TouchableOpacity onPress={() => dispatch(resetDevFlags())}>
+            <Pressable onPress={() => dispatch(resetDevFlags())} style={({ pressed }) => pressed && styles.pressed}>
               <Text style={styles.resetText}>Reset</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           <ScrollView style={styles.list} contentContainerStyle={{ gap: spacing.sm }}>
@@ -73,21 +88,20 @@ export default function DevFlagsMenu({ visible, onClose }: Props) {
           </ScrollView>
 
           <View style={styles.logActions}>
-            <TouchableOpacity style={styles.logBtn} onPress={handleShareLogs}>
+            <Pressable style={({ pressed }) => [styles.logBtn, pressed && styles.pressed]} onPress={handleShareLogs}>
               <Text style={styles.logBtnText}>Share Logs</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.logBtn} onPress={handleClearLogs}>
+            </Pressable>
+            <Pressable style={({ pressed }) => [styles.logBtn, pressed && styles.pressed]} onPress={handleClearLogs}>
               <Text style={styles.logBtnText}>Clear Logs</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
-          <TouchableOpacity
-            style={styles.closeBtn}
+          <Pressable
+            style={({ pressed }) => [styles.closeBtn, pressed && styles.pressed]}
             onPress={onClose}
-            activeOpacity={0.85}
           >
             <Text style={styles.closeText}>Закрити</Text>
-          </TouchableOpacity>
+          </Pressable>
         </Pressable>
       </Pressable>
     </Modal>
@@ -103,9 +117,38 @@ function FlagRow({
   value: boolean;
   onChange: (next: boolean) => void;
 }) {
+  const hints = FLAG_VALUE_HINTS[flagKey];
+
+  if (hints) {
+    return (
+      <View style={styles.row}>
+        <Text style={styles.rowLabel}>{FLAG_LABELS[flagKey]}</Text>
+        <View style={styles.radioGroup}>
+          {hints.map((label, idx) => {
+            const isSelected = idx === 0 ? !value : value;
+            return (
+              <Pressable
+                key={label}
+                style={({ pressed }) => [styles.radioOption, pressed && styles.pressed]}
+                onPress={() => onChange(idx === 1)}
+              >
+                <View style={[styles.radioOuter, isSelected && styles.radioOuterSelected]}>
+                  {isSelected && <View style={styles.radioInner} />}
+                </View>
+                <Text style={[styles.radioLabel, isSelected && styles.radioLabelSelected]}>
+                  {label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.row}>
-      <Text style={styles.rowLabel}>{flagKey}</Text>
+      <Text style={styles.rowLabel}>{FLAG_LABELS[flagKey]}</Text>
       <Switch
         value={value}
         onValueChange={onChange}
@@ -116,52 +159,4 @@ function FlagRow({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.45)",
-    justifyContent: "center",
-    padding: spacing.lg,
-  },
-  sheet: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.xl,
-    padding: spacing.lg,
-    gap: spacing.md,
-    maxHeight: "80%",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  title: { ...typography.heading3, color: colors.text },
-  resetText: { ...typography.label, color: colors.secondary },
-  list: { flexGrow: 0 },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: spacing.xs,
-  },
-  rowLabel: { ...typography.body, color: colors.text, flex: 1 },
-  logActions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-  logBtn: {
-    flex: 1,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: "center",
-  },
-  logBtnText: { ...typography.label, color: colors.text },
-  closeBtn: {
-    alignSelf: "flex-end",
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  closeText: { ...typography.label, color: colors.secondary },
-});
+export default DevFlagsMenu;

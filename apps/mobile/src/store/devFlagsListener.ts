@@ -1,9 +1,12 @@
 import { createListenerMiddleware } from "@reduxjs/toolkit";
-import { api } from "../api/client";
-import { supabase } from "../lib/supabase";
+import { Appearance } from "react-native";
+import { api } from "@/api/client";
+import { supabase } from "@/lib/supabase";
 import { setDevFlag } from "./devFlagsSlice";
-import { setCredentials, logout } from "./sessionSlice";
-import * as logger from "../utils/logger";
+import { setCredentials, logout, setLanguage } from "./sessionSlice";
+import * as logger from "@/utils/logger";
+import i18n from "@/i18n";
+import { persistLanguage } from "@/utils/language";
 
 /**
  * Reacts to DevFlags changes that have side effects.
@@ -16,6 +19,25 @@ import * as logger from "../utils/logger";
  *                      returns to the unauthenticated state.
  */
 export const devFlagsListener = createListenerMiddleware();
+
+devFlagsListener.startListening({
+  actionCreator: setDevFlag,
+  effect: async (action, { dispatch }) => {
+    if (action.payload.key !== "languageEN") return;
+    const lang = action.payload.value ? "en" : "uk";
+    await i18n.changeLanguage(lang);
+    await persistLanguage(lang);
+    dispatch(setLanguage(lang));
+  },
+});
+
+devFlagsListener.startListening({
+  actionCreator: setDevFlag,
+  effect: (action) => {
+    if (action.payload.key !== "darkMode") return;
+    Appearance.setColorScheme(action.payload.value ? "dark" : "light");
+  },
+});
 
 devFlagsListener.startListening({
   actionCreator: setDevFlag,

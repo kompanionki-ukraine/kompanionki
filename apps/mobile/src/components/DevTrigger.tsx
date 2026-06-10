@@ -1,12 +1,11 @@
 import React, { useRef, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Pressable, View } from "react-native";
 import Logo from "./ui/Logo";
 import DevFlagsMenu from "./DevFlagsMenu";
+import { SIZE, useStyles } from "./DevTrigger.styles";
 
 const TAPS_TO_OPEN = 2;
 const TAP_WINDOW_MS = 1500;
-const SIZE = 44;
 
 /**
  * Floating dev trigger — only rendered in __DEV__ builds.
@@ -16,13 +15,13 @@ const SIZE = 44;
  *
  * Stripped from release builds because the JSX is gated on `__DEV__`.
  */
-export default function DevTrigger() {
+const DevTrigger = () => {
   if (!__DEV__) return null;
   return <DevTriggerImpl />;
 }
 
 function DevTriggerImpl() {
-  const insets = useSafeAreaInsets();
+  const styles = useStyles();
   const [menuOpen, setMenuOpen] = useState(false);
   const tapCount = useRef(0);
   const firstTapAt = useRef(0);
@@ -45,7 +44,7 @@ function DevTriggerImpl() {
   return (
     <>
       <View
-        style={[styles.container, { top: insets.top + 4, right: 4 }]}
+        style={styles.container}
         pointerEvents="box-none"
       >
         <Pressable
@@ -64,16 +63,4 @@ function DevTriggerImpl() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    zIndex: 9999,
-    elevation: 9999,
-  },
-  button: {
-    width: SIZE,
-    height: SIZE,
-    borderRadius: SIZE / 2,
-    overflow: "hidden",
-  },
-});
+export default DevTrigger;

@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 import { useTranslation } from "react-i18next";
-import type { DiscoverScreenProps } from "../../navigation/types";
-import { colors, typography, spacing } from "../../theme";
+import type { DiscoverScreenProps } from "@/navigation/types";
+import { styles } from "./DiscoveryScreen.styles";
 
-export default function DiscoveryScreen(_props: DiscoverScreenProps<"Discovery">) {
+const DiscoveryScreen = (_props: DiscoverScreenProps<"Discovery">) => {
   const { t } = useTranslation();
 
   return (
@@ -14,13 +14,4 @@ export default function DiscoveryScreen(_props: DiscoverScreenProps<"Discovery">
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: spacing.lg,
-  },
-  label: { ...typography.heading3, color: colors.textMuted },
-});
+export default DiscoveryScreen;

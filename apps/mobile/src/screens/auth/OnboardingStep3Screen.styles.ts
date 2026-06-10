@@ -1,0 +1,78 @@
+import { StyleSheet } from "react-native";
+import { colors, typography, spacing, radius } from "@/theme";
+import { screenPadding } from "@/styles/layout";
+
+export const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.background },
+  scroll: { ...screenPadding, paddingVertical: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.md },
+  title: { ...typography.heading2, color: colors.text },
+  subtitle: { ...typography.body, color: colors.textSecondary },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  card: {
+    width: "47%",
+    padding: spacing.md,
+    borderRadius: radius.lg,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    gap: spacing.xs,
+    position: "relative",
+  },
+  iconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.surfaceAlt,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emoji: { fontSize: 22 },
+  cardTitle: { ...typography.label, color: colors.text, marginTop: spacing.xs },
+  cardDesc: { ...typography.caption, color: colors.textSecondary, lineHeight: 16 },
+  checkBadge: {
+    position: "absolute",
+    top: spacing.sm,
+    right: spacing.sm,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkText: { color: "#fff", fontSize: 12, fontWeight: "700" },
+  footer: {
+    flexDirection: "row",
+    gap: spacing.md,
+    padding: spacing.lg,
+    paddingBottom: spacing.xl,
+  },
+  back: {
+    flex: 1,
+    borderRadius: radius.full,
+    paddingVertical: spacing.md,
+    alignItems: "center",
+    borderWidth: 1.5,
+    borderColor: colors.border,
+  },
+  backText: { ...typography.body, color: colors.text, fontWeight: "600" },
+  button: {
+    flex: 2,
+    backgroundColor: colors.secondary,
+    borderRadius: radius.full,
+    paddingVertical: spacing.md,
+    alignItems: "center",
+  },
+  buttonDisabled: { opacity: 0.45 },
+  pressed: { opacity: 0.7 },
+  buttonText: {
+    ...typography.body,
+    fontWeight: "700",
+    color: colors.textInverse,
+    fontSize: 17,
+  },
+});

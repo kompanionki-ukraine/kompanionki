@@ -1,7 +1,7 @@
 import "react-native-url-polyfill/auto";
 import { createClient } from "@supabase/supabase-js";
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../config/publicEnv";
-import { keychainStorage } from "../utils/tokenStorage";
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "@/config/publicEnv";
+import { keychainStorage } from "@/utils/tokenStorage";
 
 // TODO: FOR FUTURE PRODUCTION
 // Storage was swapped from AsyncStorage → keychainStorage. Existing users on

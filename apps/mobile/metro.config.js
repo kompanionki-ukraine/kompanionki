@@ -23,6 +23,15 @@ const config = {
     extraNodeModules: {
       "@kompanionki/shared": path.resolve(root, "packages/shared/src"),
     },
+    resolveRequest: (context, moduleName, platform) => {
+      if (moduleName.startsWith("@/")) {
+        return {
+          filePath: path.resolve(__dirname, "src", moduleName.slice(2)),
+          type: "sourceFile",
+        };
+      }
+      return context.resolveRequest(context, moduleName, platform);
+    },
   },
   transformer: {
     getTransformOptions: async () => ({

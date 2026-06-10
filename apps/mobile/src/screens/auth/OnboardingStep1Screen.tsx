@@ -6,17 +6,18 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
-  StyleSheet,
+  Pressable,
   SafeAreaView,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import type { AuthScreenProps } from "../../navigation/types";
-import { colors, typography, spacing, radius } from "../../theme";
-import OnboardingProgress from "../../components/ui/OnboardingProgress";
+import type { AuthScreenProps } from "@/navigation/types";
+import { colors } from "@/theme";
+import { styles } from "./OnboardingStep1Screen.styles";
+import OnboardingProgress from "@/components/ui/OnboardingProgress";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 type FormData = {
   displayName: string;
@@ -25,9 +26,9 @@ type FormData = {
   occupation: string;
 };
 
-export default function OnboardingStep1Screen({
+const OnboardingStep1Screen = ({
   navigation,
-}: AuthScreenProps<"OnboardingStep1">) {
+}: AuthScreenProps<"OnboardingStep1">) => {
   const { t } = useTranslation();
   const [form, setForm] = useState<FormData>({
     displayName: "",
@@ -58,7 +59,12 @@ export default function OnboardingStep1Screen({
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
         >
-          <OnboardingProgress step={1} total={5} />
+          <View style={styles.headerRow}>
+            <View style={{ flex: 1 }}>
+              <OnboardingProgress step={1} total={5} />
+            </View>
+            <LanguageSwitcher compact />
+          </View>
 
           <Text style={styles.title}>{t("onboarding.step1Title")}</Text>
           <Text style={styles.subtitle}>{t("onboarding.step1Subtitle")}</Text>
@@ -118,56 +124,17 @@ export default function OnboardingStep1Screen({
         </ScrollView>
 
         <View style={styles.footer}>
-          <TouchableOpacity
-            style={[styles.button, !isValid && styles.buttonDisabled]}
+          <Pressable
+            style={({ pressed }) => [styles.button, !isValid && styles.buttonDisabled, pressed && styles.pressed]}
             onPress={handleNext}
             disabled={!isValid}
           >
             <Text style={styles.buttonText}>{t("onboarding.next")}</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
-  scroll: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xxl,
-    gap: spacing.md,
-  },
-  title: { ...typography.heading2, color: colors.text },
-  subtitle: { ...typography.body, color: colors.textSecondary },
-  fields: { gap: spacing.md, marginTop: spacing.sm },
-  field: { gap: spacing.xs },
-  label: { ...typography.label, color: colors.text },
-  input: {
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 4,
-    fontSize: 16,
-    color: colors.text,
-    backgroundColor: colors.surface,
-  },
-  footer: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl,
-  },
-  button: {
-    backgroundColor: colors.secondary,
-    borderRadius: radius.full,
-    paddingVertical: spacing.md,
-    alignItems: "center",
-  },
-  buttonDisabled: { opacity: 0.45 },
-  buttonText: {
-    ...typography.body,
-    fontWeight: "700",
-    color: colors.textInverse,
-    fontSize: 17,
-  },
-});
+export default OnboardingStep1Screen;

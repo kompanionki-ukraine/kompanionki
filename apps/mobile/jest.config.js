@@ -2,6 +2,6 @@ module.exports = {
   preset: "@react-native/jest-preset",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   transformIgnorePatterns: [
-    "node_modules/(?!((jest-)?react-native|@react-native(-community)?|react-redux|@reduxjs|@react-navigation|immer)/)",
+    "node_modules/(?!((jest-)?react-native|@react-native(-community)?|react-redux|@reduxjs|@react-navigation|immer|react-native-vector-icons)/)",
   ],
 };

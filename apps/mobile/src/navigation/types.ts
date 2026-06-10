@@ -1,6 +1,13 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 
+// ── Root navigator ─────────────────────────────────────────────────────────────
+export type RootParamList = {
+  Splash: undefined;
+  SocialRegistration: undefined;
+  Main: undefined;
+};
+
 // ── Auth stack ────────────────────────────────────────────────────────────────
 export type AuthStackParamList = {
   Welcome: undefined;

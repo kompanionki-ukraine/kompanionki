@@ -1,12 +1,12 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import type { GroupsStackParamList } from "../types";
-import GroupsListScreen from "../../screens/main/GroupsListScreen";
-import { colors } from "../../theme";
+import type { GroupsStackParamList } from "@/navigation/types";
+import GroupsListScreen from "@/screens/main/GroupsListScreen";
+import { colors } from "@/theme";
 
 const Stack = createNativeStackNavigator<GroupsStackParamList>();
 
-export default function GroupsStack() {
+const GroupsStack = () => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -19,4 +19,6 @@ export default function GroupsStack() {
       <Stack.Screen name="GroupsList" component={GroupsListScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
-}
+};
+
+export default GroupsStack;

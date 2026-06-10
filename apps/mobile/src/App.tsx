@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AppState, Linking, StatusBar, StyleSheet, Text, View } from "react-native";
+import { AppState, Linking, StatusBar, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Provider } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
@@ -12,7 +12,8 @@ import { configureGoogleSignIn } from "./auth/socialSignIn";
 import { applyOAuthCallbackUrl } from "./auth/oauthSession";
 import { supabase } from "./lib/supabase";
 import DevTrigger from "./components/DevTrigger";
-import { colors, spacing } from "./theme";
+import AppAlertModal from "./components/ui/AppAlertModal";
+import { styles } from "./App.styles";
 
 const BANNER_DURATION_MS = 4000;
 
@@ -99,6 +100,7 @@ function AppContent(): React.JSX.Element {
             <RootNavigator />
           </NavigationContainer>
           <DevTrigger />
+          <AppAlertModal />
           {bannerMessage ? (
             <View style={styles.banner} pointerEvents="none">
               <Text style={styles.bannerText}>{bannerMessage}</Text>
@@ -110,24 +112,8 @@ function AppContent(): React.JSX.Element {
   );
 }
 
-export default function App(): React.JSX.Element {
+const App = (): React.JSX.Element => {
   return <AppContent />;
-}
+};
 
-const styles = StyleSheet.create({
-  banner: {
-    position: "absolute",
-    bottom: spacing.lg,
-    left: spacing.md,
-    right: spacing.md,
-    backgroundColor: colors.error,
-    borderRadius: 8,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  bannerText: {
-    color: colors.textInverse,
-    fontSize: 14,
-    textAlign: "center",
-  },
-});
+export default App;

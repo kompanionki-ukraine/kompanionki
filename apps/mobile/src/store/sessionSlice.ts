@@ -39,6 +39,7 @@ const sessionSlice = createSlice({
       state.accessToken = null;
       state.isAuthenticated = false;
       state.onboardingCompleted = false;
+      // languagePref intentionally kept — language choice survives sign-out
     },
   },
 });

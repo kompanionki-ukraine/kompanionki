@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet, SafeAreaView } from "react-native";
-import type { AuthScreenProps } from "../../navigation/types";
-import { colors, typography, spacing } from "../../theme";
+import { View, Text, SafeAreaView } from "react-native";
+import type { AuthScreenProps } from "@/navigation/types";
+import { styles } from "./OtpVerifyScreen.styles";
 
 /** OTP removed — placeholder screen. */
-export default function OtpVerifyScreen(_props: AuthScreenProps<"OtpVerify">) {
+const OtpVerifyScreen = (_props: AuthScreenProps<"OtpVerify">) => {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
@@ -14,8 +14,4 @@ export default function OtpVerifyScreen(_props: AuthScreenProps<"OtpVerify">) {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
-  container: { flex: 1, padding: spacing.lg, justifyContent: "center" },
-  text: { ...typography.body, color: colors.textSecondary, textAlign: "center" },
-});
+export default OtpVerifyScreen;

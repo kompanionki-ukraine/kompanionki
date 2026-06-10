@@ -9,10 +9,11 @@
  * - Files > 5 MB are rejected client-side before calling presign
  */
 
-import { store } from "../store";
-import { api } from "../api/client";
+import { store } from "@/store";
+import { api } from "@/api/client";
+import i18n from "@/i18n";
 
-type UploadPurpose = "avatar" | "post_image" | "group_cover" | "event_cover";
+export type UploadPurpose = "avatar" | "post_image" | "group_cover" | "event_cover";
 
 export interface LocalFile {
   uri: string;
@@ -28,7 +29,7 @@ export async function uploadMedia(
   purpose: UploadPurpose
 ): Promise<string> {
   if (file.size > MAX_BYTES) {
-    throw new Error("Файл занадто великий (максимум 5 МБ)");
+    throw new Error(i18n.t("errors.fileTooLarge"));
   }
 
   // Dispatch RTK Query mutation via store directly (callable outside hooks)
@@ -41,7 +42,7 @@ export async function uploadMedia(
   );
 
   if ("error" in result || !result.data) {
-    throw new Error("Не вдалося отримати URL для завантаження");
+    throw new Error(i18n.t("errors.uploadPresignFailed"));
   }
 
   const { uploadUrl, publicUrl } = result.data;
@@ -56,7 +57,7 @@ export async function uploadMedia(
   });
 
   if (!response.ok) {
-    throw new Error(`Помилка завантаження: ${response.status}`);
+    throw new Error(i18n.t("errors.uploadFailed"));
   }
 
   return publicUrl;

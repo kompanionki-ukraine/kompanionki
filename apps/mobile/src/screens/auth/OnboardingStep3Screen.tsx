@@ -5,16 +5,16 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
-  StyleSheet,
+  Pressable,
   SafeAreaView,
   ScrollView,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import type { AuthScreenProps } from "../../navigation/types";
+import type { AuthScreenProps } from "@/navigation/types";
 import type { Intent } from "@kompanionki/shared";
-import { colors, typography, spacing, radius, intentColors } from "../../theme";
-import OnboardingProgress from "../../components/ui/OnboardingProgress";
+import { colors, intentColors } from "@/theme";
+import { styles } from "./OnboardingStep3Screen.styles";
+import OnboardingProgress from "@/components/ui/OnboardingProgress";
 
 type IntentOption = { id: Intent; emoji: string };
 
@@ -27,9 +27,9 @@ const INTENT_OPTIONS: IntentOption[] = [
   { id: "support", emoji: "🤝" },
 ];
 
-export default function OnboardingStep3Screen({
+const OnboardingStep3Screen = ({
   navigation,
-}: AuthScreenProps<"OnboardingStep3">) {
+}: AuthScreenProps<"OnboardingStep3">) => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<Intent[]>([]);
 
@@ -52,9 +52,9 @@ export default function OnboardingStep3Screen({
             const isSelected = selected.includes(id);
             const color = intentColors[id] ?? colors.primary;
             return (
-              <TouchableOpacity
+              <Pressable
                 key={id}
-                style={[styles.card, isSelected && { borderColor: color }]}
+                style={({ pressed }) => [styles.card, isSelected && { borderColor: color }, pressed && styles.pressed]}
                 onPress={() => toggle(id)}
               >
                 <View
@@ -74,98 +74,29 @@ export default function OnboardingStep3Screen({
                     <Text style={styles.checkText}>✓</Text>
                   </View>
                 )}
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
+        <Pressable
+          style={({ pressed }) => [styles.back, pressed && styles.pressed]}
+          onPress={() => navigation.goBack()}
+        >
           <Text style={styles.backText}>{t("onboarding.back")}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, selected.length === 0 && styles.buttonDisabled]}
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [styles.button, selected.length === 0 && styles.buttonDisabled, pressed && styles.pressed]}
           onPress={() => selected.length > 0 && navigation.navigate("OnboardingStep4")}
           disabled={selected.length === 0}
         >
           <Text style={styles.buttonText}>{t("onboarding.next")}</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
-  scroll: { padding: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.md },
-  title: { ...typography.heading2, color: colors.text },
-  subtitle: { ...typography.body, color: colors.textSecondary },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.sm,
-    marginTop: spacing.sm,
-  },
-  card: {
-    width: "47%",
-    padding: spacing.md,
-    borderRadius: radius.lg,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    gap: spacing.xs,
-    position: "relative",
-  },
-  iconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.surfaceAlt,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  emoji: { fontSize: 22 },
-  cardTitle: { ...typography.label, color: colors.text, marginTop: spacing.xs },
-  cardDesc: { ...typography.caption, color: colors.textSecondary, lineHeight: 16 },
-  checkBadge: {
-    position: "absolute",
-    top: spacing.sm,
-    right: spacing.sm,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkText: { color: "#fff", fontSize: 12, fontWeight: "700" },
-  footer: {
-    flexDirection: "row",
-    gap: spacing.md,
-    padding: spacing.lg,
-    paddingBottom: spacing.xl,
-  },
-  back: {
-    flex: 1,
-    borderRadius: radius.full,
-    paddingVertical: spacing.md,
-    alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: colors.border,
-  },
-  backText: { ...typography.body, color: colors.text, fontWeight: "600" },
-  button: {
-    flex: 2,
-    backgroundColor: colors.secondary,
-    borderRadius: radius.full,
-    paddingVertical: spacing.md,
-    alignItems: "center",
-  },
-  buttonDisabled: { opacity: 0.45 },
-  buttonText: {
-    ...typography.body,
-    fontWeight: "700",
-    color: colors.textInverse,
-    fontSize: 17,
-  },
-});
+export default OnboardingStep3Screen;

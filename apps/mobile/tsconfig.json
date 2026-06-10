@@ -17,7 +17,8 @@
     "baseUrl": ".",
     "paths": {
       "@kompanionki/shared": ["../../packages/shared/src/index.ts"],
-      "@kompanionki/shared/*": ["../../packages/shared/src/*"]
+      "@kompanionki/shared/*": ["../../packages/shared/src/*"],
+      "@/*": ["src/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],

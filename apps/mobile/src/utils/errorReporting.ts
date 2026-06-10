@@ -10,17 +10,13 @@
  */
 export function captureException(err: unknown, context?: Record<string, unknown>): void {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
     const Sentry = require("@sentry/react-native");
     if (context) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       Sentry.withScope((scope: { setExtras: (c: unknown) => void }) => {
         scope.setExtras(context);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         Sentry.captureException(err);
       });
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       Sentry.captureException(err);
     }
   } catch {
@@ -30,7 +26,6 @@ export function captureException(err: unknown, context?: Record<string, unknown>
 
 export function captureMessage(message: string): void {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     require("@sentry/react-native").captureMessage(message);
   } catch {
     console.info("[info]", message);

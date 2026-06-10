@@ -7,6 +7,10 @@ module.exports = {
     ios: {},
     android: {},
   },
+  // Font assets — `npx react-native link` copies these to:
+  //   iOS:     Kompanionki/Info.plist (UIAppFonts) + Xcode project
+  //   Android: android/app/src/main/assets/fonts/
+  assets: ['./src/assets/fonts'],
   // Tell the CLI where to find packages in the monorepo root
   // so auto-linking works with hoisted node_modules
   dependencies: {

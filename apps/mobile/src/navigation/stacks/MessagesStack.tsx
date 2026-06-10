@@ -1,12 +1,12 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import type { MessagesStackParamList } from "../types";
-import ConversationListScreen from "../../screens/main/ConversationListScreen";
-import { colors } from "../../theme";
+import type { MessagesStackParamList } from "@/navigation/types";
+import ConversationListScreen from "@/screens/main/ConversationListScreen";
+import { colors } from "@/theme";
 
 const Stack = createNativeStackNavigator<MessagesStackParamList>();
 
-export default function MessagesStack() {
+const MessagesStack = () => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -23,4 +23,6 @@ export default function MessagesStack() {
       />
     </Stack.Navigator>
   );
-}
+};
+
+export default MessagesStack;

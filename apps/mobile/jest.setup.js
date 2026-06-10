@@ -1,3 +1,24 @@
+jest.mock("@react-native-async-storage/async-storage", () =>
+  require("@react-native-async-storage/async-storage/jest/async-storage-mock")
+);
+
+jest.mock("react-native-vector-icons/Ionicons", () => "Ionicons");
+
+jest.mock("react-native-localize", () => ({
+  getLocales: () => [{ languageCode: "uk", countryCode: "UA", languageTag: "uk-UA", isRTL: false }],
+  getNumberFormatSettings: () => ({ decimalSeparator: ".", groupingSeparator: "," }),
+  getCalendar: () => "gregorian",
+  getCountry: () => "UA",
+  getCurrencies: () => ["UAH"],
+  getTemperatureUnit: () => "celsius",
+  getTimeZone: () => "Europe/Kiev",
+  uses24HourClock: () => true,
+  usesMetricSystem: () => true,
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+  findBestLanguageTag: jest.fn(),
+}));
+
 jest.mock("./src/config/publicEnv", () => ({
   SUPABASE_URL: "https://test.supabase.co",
   SUPABASE_ANON_KEY: "test-anon",

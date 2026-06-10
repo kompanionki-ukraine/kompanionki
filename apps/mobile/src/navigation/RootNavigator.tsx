@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import type { Session } from "@supabase/supabase-js";
-import { useAppDispatch, useAppSelector } from "../store";
-import { setDevFlagsHydrated } from "../store/devFlagsSlice";
-import { setCredentials, logout } from "../store/sessionSlice";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { setDevFlagsHydrated } from "@/store/devFlagsSlice";
+import { setCredentials, logout, setLanguage } from "@/store/sessionSlice";
 import MainTabs from "./MainTabs";
-import SplashScreen from "../screens/SplashScreen";
-import SocialRegistrationScreen from "../screens/auth/SocialRegistrationScreen";
-import { supabase } from "../lib/supabase";
-import { syncUserProfile } from "../api/syncUser";
-
-type RootParamList = {
-  Splash: undefined;
-  SocialRegistration: undefined;
-  Main: undefined;
-};
+import SplashScreen from "@/screens/SplashScreen";
+import SocialRegistrationScreen from "@/screens/auth/SocialRegistrationScreen";
+import { supabase } from "@/lib/supabase";
+import type { RootParamList } from "./types";
+import { syncUserProfile } from "@/api/syncUser";
+import { loadSavedLanguage, detectDeviceLanguage, persistLanguage } from "@/utils/language";
+import i18n from "@/i18n";
 
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -25,7 +22,7 @@ function credentialsFromSession(session: Session) {
   };
 }
 
-export default function RootNavigator() {
+const RootNavigator = () => {
   const dispatch = useAppDispatch();
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
@@ -72,6 +69,13 @@ export default function RootNavigator() {
         } else {
           setSession(null);
         }
+
+        // Load persisted language (or detect from device on first launch)
+        const saved = await loadSavedLanguage();
+        const lang = saved ?? detectDeviceLanguage();
+        if (!saved) await persistLanguage(lang);
+        await i18n.changeLanguage(lang);
+        dispatch(setLanguage(lang));
       } catch (err) {
         console.error("[RootNavigator] getSession failed:", err);
       } finally {
@@ -128,4 +132,6 @@ export default function RootNavigator() {
       )}
     </Stack.Navigator>
   );
-}
+};
+
+export default RootNavigator;
