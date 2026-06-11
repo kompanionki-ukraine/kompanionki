@@ -10,26 +10,24 @@ import {
   ScrollView,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import type { AuthScreenProps } from "@/navigation/types";
+import type { OnboardingScreenProps } from "@/navigation/types";
 import type { Intent } from "@kompanionki/shared";
 import { colors, intentColors } from "@/theme";
 import { styles } from "./OnboardingStep3Screen.styles";
 import OnboardingProgress from "@/components/ui/OnboardingProgress";
 
-type IntentOption = { id: Intent; emoji: string };
-
-const INTENT_OPTIONS: IntentOption[] = [
-  { id: "friendship", emoji: "💛" },
-  { id: "co_living", emoji: "🏠" },
-  { id: "co_parenting", emoji: "👶" },
-  { id: "co_business", emoji: "💼" },
-  { id: "mentorship", emoji: "🎓" },
-  { id: "support", emoji: "🤝" },
+const INTENT_OPTIONS: Intent[] = [
+  "friendship",
+  "co_living",
+  "co_parenting",
+  "co_business",
+  "mentorship",
+  "support",
 ];
 
 const OnboardingStep3Screen = ({
   navigation,
-}: AuthScreenProps<"OnboardingStep3">) => {
+}: OnboardingScreenProps<"OnboardingStep3">) => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<Intent[]>([]);
 
@@ -48,7 +46,7 @@ const OnboardingStep3Screen = ({
         <Text style={styles.subtitle}>{t("onboarding.step2Subtitle")}</Text>
 
         <View style={styles.grid}>
-          {INTENT_OPTIONS.map(({ id, emoji }) => {
+          {INTENT_OPTIONS.map((id) => {
             const isSelected = selected.includes(id);
             const color = intentColors[id] ?? colors.primary;
             return (
@@ -57,14 +55,6 @@ const OnboardingStep3Screen = ({
                 style={({ pressed }) => [styles.card, isSelected && { borderColor: color }, pressed && styles.pressed]}
                 onPress={() => toggle(id)}
               >
-                <View
-                  style={[
-                    styles.iconCircle,
-                    isSelected && { backgroundColor: color + "22" },
-                  ]}
-                >
-                  <Text style={styles.emoji}>{emoji}</Text>
-                </View>
                 <Text style={[styles.cardTitle, isSelected && { color }]}>
                   {t(`intents.${id}`)}
                 </Text>

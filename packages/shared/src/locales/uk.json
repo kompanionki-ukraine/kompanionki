@@ -135,8 +135,13 @@
     "age": "Вік",
     "intent": "Намір"
   },
+  "languages": {
+    "uk": "Українська",
+    "en": "English"
+  },
   "profile": {
     "title": "Мій профіль",
+    "versionText": "Компаньйонки v1.0.0 MVP",
     "edit": "Редагувати",
     "settings": "Налаштування",
     "logout": "Вийти",

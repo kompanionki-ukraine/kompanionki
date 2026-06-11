@@ -13,10 +13,11 @@ import {
   Platform,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import type { AuthScreenProps } from "@/navigation/types";
+import type { OnboardingScreenProps } from "@/navigation/types";
 import { colors } from "@/theme";
 import { styles } from "./OnboardingStep4Screen.styles";
 import OnboardingProgress from "@/components/ui/OnboardingProgress";
+import { OnboardingSection } from "@/components/ui/OnboardingSection";
 
 const VALUES_TAGS = [
   "сім'я", "кар'єра", "здоров'я", "природа", "подорожі", "творчість",
@@ -25,7 +26,7 @@ const VALUES_TAGS = [
 
 const OnboardingStep4Screen = ({
   navigation,
-}: AuthScreenProps<"OnboardingStep4">) => {
+}: OnboardingScreenProps<"OnboardingStep4">) => {
   const { t } = useTranslation();
   const [bio, setBio] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -51,8 +52,7 @@ const OnboardingStep4Screen = ({
           <Text style={styles.title}>{t("onboarding.step3Title")}</Text>
           <Text style={styles.subtitle}>{t("onboarding.step3Subtitle")}</Text>
 
-          <View style={styles.field}>
-            <Text style={styles.label}>{t("onboarding.bio")}</Text>
+          <OnboardingSection title={t("onboarding.bio")}>
             <TextInput
               style={styles.textarea}
               value={bio}
@@ -64,25 +64,26 @@ const OnboardingStep4Screen = ({
               textAlignVertical="top"
             />
             <Text style={styles.charCount}>{bio.length}/500</Text>
-          </View>
+          </OnboardingSection>
 
-          <Text style={styles.label}>{t("profile.values")}</Text>
-          <View style={styles.tagsWrap}>
-            {VALUES_TAGS.map((tag) => {
-              const isSelected = selectedTags.includes(tag);
-              return (
-                <Pressable
-                  key={tag}
-                  style={({ pressed }) => [styles.tag, isSelected && styles.tagSelected, pressed && styles.pressed]}
-                  onPress={() => toggleTag(tag)}
-                >
-                  <Text style={[styles.tagText, isSelected && styles.tagTextSelected]}>
-                    {tag}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
+          <OnboardingSection title={t("profile.values")}>
+            <View style={styles.tagsWrap}>
+              {VALUES_TAGS.map((tag) => {
+                const isSelected = selectedTags.includes(tag);
+                return (
+                  <Pressable
+                    key={tag}
+                    style={({ pressed }) => [styles.tag, isSelected && styles.tagSelected, pressed && styles.pressed]}
+                    onPress={() => toggleTag(tag)}
+                  >
+                    <Text style={[styles.tagText, isSelected && styles.tagTextSelected]}>
+                      {tag}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </OnboardingSection>
         </ScrollView>
 
         <View style={styles.footer}>

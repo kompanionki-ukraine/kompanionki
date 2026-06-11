@@ -6,7 +6,6 @@ export const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   scroll: { ...screenPadding, paddingVertical: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.md },
   title: { ...typography.heading2, color: colors.text },
-  sectionLabel: { ...typography.label, color: colors.textSecondary, marginTop: spacing.sm },
   optionsGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   option: {
     paddingHorizontal: spacing.md,

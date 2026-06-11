@@ -135,8 +135,13 @@
     "age": "Age",
     "intent": "Intent"
   },
+  "languages": {
+    "uk": "Українська",
+    "en": "English"
+  },
   "profile": {
     "title": "My profile",
+    "versionText": "Kompanionki v1.0.0 MVP",
     "edit": "Edit",
     "settings": "Settings",
     "logout": "Log out",

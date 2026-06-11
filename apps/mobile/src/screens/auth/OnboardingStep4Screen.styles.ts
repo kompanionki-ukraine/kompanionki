@@ -7,8 +7,6 @@ export const styles = StyleSheet.create({
   scroll: { ...screenPadding, paddingVertical: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.md },
   title: { ...typography.heading2, color: colors.text },
   subtitle: { ...typography.body, color: colors.textSecondary },
-  field: { gap: spacing.xs },
-  label: { ...typography.label, color: colors.text },
   textarea: {
     borderWidth: 1.5,
     borderColor: colors.border,

@@ -5,6 +5,7 @@ import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 export type RootParamList = {
   Splash: undefined;
   SocialRegistration: undefined;
+  OnboardingStack: undefined;
   Main: undefined;
 };
 
@@ -13,6 +14,15 @@ export type AuthStackParamList = {
   Welcome: undefined;
   PhoneInput: undefined;
   OtpVerify: { phone: string };
+  OnboardingStep1: undefined;
+  OnboardingStep2: undefined;
+  OnboardingStep3: undefined;
+  OnboardingStep4: undefined;
+  OnboardingStep5: undefined;
+};
+
+// ── Onboarding stack ──────────────────────────────────────────────────────────
+export type OnboardingStackParamList = {
   OnboardingStep1: undefined;
   OnboardingStep2: undefined;
   OnboardingStep3: undefined;
@@ -57,6 +67,9 @@ export type ProfileStackParamList = {
 // ── Screen prop helpers ───────────────────────────────────────────────────────
 export type AuthScreenProps<T extends keyof AuthStackParamList> =
   NativeStackScreenProps<AuthStackParamList, T>;
+
+export type OnboardingScreenProps<T extends keyof OnboardingStackParamList> =
+  NativeStackScreenProps<OnboardingStackParamList, T>;
 
 export type TabScreenProps<T extends keyof TabParamList> =
   BottomTabScreenProps<TabParamList, T>;

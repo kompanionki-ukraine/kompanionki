@@ -21,59 +21,10 @@ import { persistLanguage } from "@/utils/language";
 import i18n from "@/i18n";
 import { supabase } from "@/lib/supabase";
 import { signOutSocial } from "@/auth/socialSignIn";
-import type { Intent, VerifiedLevel } from "@kompanionki/shared";
 import { handleError } from "@/utils/errorHandler";
-
-const intentIcons: Record<Intent, string> = {
-  friendship: "💝",
-  co_living: "🏠",
-  co_parenting: "👨‍👩‍👧",
-  co_business: "💼",
-  mentorship: "🎓",
-  support: "🤝",
-};
-
-const verificationBadgeKey: Record<VerifiedLevel, string> = {
-  none: "",
-  phone: "profile.verifiedPhone",
-  selfie: "profile.verifiedSelfie",
-  id: "profile.verifiedId",
-};
-
-// ─── SettingsItem ─────────────────────────────────────────────────────────────
-
-interface SettingsItemProps {
-  icon: string;
-  label: string;
-  description?: string;
-  onPress?: () => void;
-  destructive?: boolean;
-}
-
-function SettingsItem({ icon, label, description, onPress, destructive }: SettingsItemProps) {
-  return (
-    <Pressable style={({ pressed }) => [styles.settingsItem, pressed && styles.pressed]} onPress={onPress}>
-      <View style={[styles.settingsIconBox, destructive && styles.settingsIconBoxDestructive]}>
-        <Ionicons
-          name={icon}
-          size={20}
-          color={destructive ? colors.error : colors.textSecondary}
-        />
-      </View>
-      <View style={styles.settingsContent}>
-        <Text style={[styles.settingsLabel, destructive && styles.settingsLabelDestructive]}>
-          {label}
-        </Text>
-        {description ? (
-          <Text style={styles.settingsDescription}>{description}</Text>
-        ) : null}
-      </View>
-      {onPress && !destructive ? (
-        <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
-      ) : null}
-    </Pressable>
-  );
-}
+import { verificationBadgeKey } from "@/constants/profile";
+import { SettingsItem, type SettingsItemProps } from "@/components/ui/SettingsItem";
+import { ProfileSection } from "@/components/ui/ProfileSection";
 
 // ─── MyProfileScreen ──────────────────────────────────────────────────────────
 
@@ -93,8 +44,8 @@ const MyProfileScreen = (_props: ProfileScreenProps<"MyProfile">) => {
 
   const handleLanguagePick = useCallback(() => {
     const options = [
-      { label: "Українська", lang: "uk" as const },
-      { label: "English", lang: "en" as const },
+      { label: t("languages.uk"), lang: "uk" as const },
+      { label: t("languages.en"), lang: "en" as const },
     ];
     Alert.alert(
       t("profile.language"),
@@ -182,6 +133,14 @@ const MyProfileScreen = (_props: ProfileScreenProps<"MyProfile">) => {
   const verificationLabelKey = verificationBadgeKey[profile.verifiedLevel];
   const verificationLabel = verificationLabelKey ? t(verificationLabelKey) : "";
 
+  const settingsItems: SettingsItemProps[] = [
+    { icon: "notifications-outline", label: t("profile.notifications"), description: t("profile.notificationsDesc"), onPress: () => {} },
+    { icon: "lock-closed-outline", label: t("profile.privacy"), description: t("profile.privacyDesc"), onPress: () => {} },
+    { icon: "globe-outline", label: t("profile.language"), description: t("profile.languageName"), onPress: handleLanguagePick },
+    { icon: "help-circle-outline", label: t("profile.help"), description: t("profile.helpDesc"), onPress: () => {} },
+    { icon: "star-outline", label: t("profile.rateApp"), onPress: () => {} },
+  ];
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       {/* Navigation bar */}
@@ -199,7 +158,7 @@ const MyProfileScreen = (_props: ProfileScreenProps<"MyProfile">) => {
         showsVerticalScrollIndicator={false}
       >
         {/* Profile card */}
-        <View style={styles.card}>
+        <ProfileSection>
           <View style={styles.profileHeader}>
             {/* Avatar */}
             <View style={styles.avatarContainer}>
@@ -261,10 +220,10 @@ const MyProfileScreen = (_props: ProfileScreenProps<"MyProfile">) => {
               <Text style={styles.statLabel}>{t("profile.endorsements")}</Text>
             </View>
           </View>
-        </View>
+        </ProfileSection>
 
         {/* About */}
-        <View style={styles.card}>
+        <ProfileSection>
           <Text style={styles.sectionTitle}>{t("profile.about")}</Text>
           <Text style={styles.bioText}>
             {profile.bio || t("profile.bioEmpty")}
@@ -279,11 +238,11 @@ const MyProfileScreen = (_props: ProfileScreenProps<"MyProfile">) => {
             <Ionicons name="calendar-outline" size={16} color={colors.textMuted} />
             <Text style={styles.infoText}>{t(`lifeStages.${profile.lifeStage}`)}</Text>
           </View>
-        </View>
+        </ProfileSection>
 
         {/* Looking for */}
         {profile.intents.length > 0 ? (
-          <View style={styles.card}>
+          <ProfileSection>
             <Text style={styles.sectionTitle}>{t("profile.lookingFor")}</Text>
             <View style={styles.pillsRow}>
               {profile.intents.map((intent) => (
@@ -292,17 +251,17 @@ const MyProfileScreen = (_props: ProfileScreenProps<"MyProfile">) => {
                   style={[styles.intentPill, { backgroundColor: intentColors[intent] }]}
                 >
                   <Text style={styles.intentPillText}>
-                    {intentIcons[intent]} {t(`intents.${intent}`)}
+                    {t(`intents.${intent}`)}
                   </Text>
                 </View>
               ))}
             </View>
-          </View>
+          </ProfileSection>
         ) : null}
 
         {/* Values */}
         {profile.valuesTags.length > 0 ? (
-          <View style={styles.card}>
+          <ProfileSection>
             <Text style={styles.sectionTitle}>{t("profile.values")}</Text>
             <View style={styles.pillsRow}>
               {profile.valuesTags.map((tag) => (
@@ -311,58 +270,31 @@ const MyProfileScreen = (_props: ProfileScreenProps<"MyProfile">) => {
                 </View>
               ))}
             </View>
-          </View>
+          </ProfileSection>
         ) : null}
 
         {/* Settings */}
-        <View style={styles.card}>
-          <SettingsItem
-            icon="notifications-outline"
-            label={t("profile.notifications")}
-            description={t("profile.notificationsDesc")}
-            onPress={() => {}}
-          />
-          <View style={styles.settingsDivider} />
-          <SettingsItem
-            icon="lock-closed-outline"
-            label={t("profile.privacy")}
-            description={t("profile.privacyDesc")}
-            onPress={() => {}}
-          />
-          <View style={styles.settingsDivider} />
-          <SettingsItem
-            icon="globe-outline"
-            label={t("profile.language")}
-            description={t("profile.languageName")}
-            onPress={handleLanguagePick}
-          />
-          <View style={styles.settingsDivider} />
-          <SettingsItem
-            icon="help-circle-outline"
-            label={t("profile.help")}
-            description={t("profile.helpDesc")}
-            onPress={() => {}}
-          />
-          <View style={styles.settingsDivider} />
-          <SettingsItem
-            icon="star-outline"
-            label={t("profile.rateApp")}
-            onPress={() => {}}
-          />
-        </View>
+        <ProfileSection>
+          {settingsItems.map((item, index) => (
+            <React.Fragment key={item.icon}>
+              {index > 0 && <View style={styles.settingsDivider} />}
+              <SettingsItem {...item} />
+            </React.Fragment>
+          ))}
+        </ProfileSection>
 
         {/* Logout */}
-        <View style={styles.card}>
+        <ProfileSection>
           <SettingsItem
             icon="log-out-outline"
             label={loggingOut ? t("profile.loggingOut") : t("profile.logout")}
             onPress={loggingOut ? undefined : handleLogout}
             destructive
           />
-        </View>
+        </ProfileSection>
 
         {/* Version */}
-        <Text style={styles.versionText}>Компаньйонки v1.0.0 MVP</Text>
+        <Text style={styles.versionText}>{t("profile.versionText")}</Text>
       </ScrollView>
     </SafeAreaView>
   );

@@ -12,19 +12,21 @@ import {
 } from "react-native";
 import { handleError } from "@/utils/errorHandler";
 import { useTranslation } from "react-i18next";
-import type { AuthScreenProps } from "@/navigation/types";
+import type { OnboardingScreenProps } from "@/navigation/types";
 import { useCreateProfileMutation } from "@/api/client";
-import { useAppDispatch } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import { setOnboardingCompleted } from "@/store/sessionSlice";
+import { persistOnboardingCompleted } from "@/utils/onboardingStorage";
 import { colors } from "@/theme";
 import { styles } from "./OnboardingStep5Screen.styles";
 import OnboardingProgress from "@/components/ui/OnboardingProgress";
 
 const OnboardingStep5Screen = ({
   navigation,
-}: AuthScreenProps<"OnboardingStep5">) => {
+}: OnboardingScreenProps<"OnboardingStep5">) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const userId = useAppSelector((s) => s.session.userId);
   const [avatarUri, _setAvatarUri] = useState<string | null>(null);
   const [createProfile, { isLoading }] = useCreateProfileMutation();
 
@@ -42,6 +44,7 @@ const OnboardingStep5Screen = ({
         intents: ["friendship"],
       }).unwrap();
 
+      if (userId) await persistOnboardingCompleted(userId);
       dispatch(setOnboardingCompleted(true));
     } catch (e) {
       handleError(e, { message: t("errors.profileCreateFailed") });
@@ -61,7 +64,7 @@ const OnboardingStep5Screen = ({
             <Image source={{ uri: avatarUri }} style={styles.avatar} />
           ) : (
             <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarPlaceholderText}>📷</Text>
+              <Text style={styles.avatarPlaceholderText}>{t("onboarding.addPhoto")}</Text>
             </View>
           )}
           <Pressable style={({ pressed }) => [styles.uploadButton, pressed && styles.pressed]}>

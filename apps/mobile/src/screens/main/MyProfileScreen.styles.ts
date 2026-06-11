@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { colors, palette, typography, spacing, radius, shadows } from "@/theme";
+import { colors, typography, spacing, radius, shadows } from "@/theme";
 import { screenPadding } from "@/styles/layout";
 
 export const styles = StyleSheet.create({
@@ -76,15 +76,6 @@ export const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingBottom: spacing.xxl,
     gap: spacing.md,
-  },
-
-  // Card
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.xl,
-    padding: spacing.md,
-    marginHorizontal: spacing.md,
-    ...shadows.md,
   },
 
   // Profile header
@@ -248,37 +239,6 @@ export const styles = StyleSheet.create({
   },
 
   // Settings
-  settingsItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  settingsIconBox: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.md,
-    backgroundColor: colors.surfaceAlt,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  settingsIconBoxDestructive: {
-    backgroundColor: palette.red100,
-  },
-  settingsContent: { flex: 1 },
-  settingsLabel: {
-    ...typography.body,
-    color: colors.text,
-    fontWeight: "600",
-  },
-  settingsLabelDestructive: {
-    color: colors.error,
-  },
-  settingsDescription: {
-    ...typography.bodySmall,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
   settingsDivider: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: colors.border,

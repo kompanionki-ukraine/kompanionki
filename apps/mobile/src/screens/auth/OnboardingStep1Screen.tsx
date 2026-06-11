@@ -13,7 +13,7 @@ import {
   Platform,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import type { AuthScreenProps } from "@/navigation/types";
+import type { OnboardingScreenProps } from "@/navigation/types";
 import { colors } from "@/theme";
 import { styles } from "./OnboardingStep1Screen.styles";
 import OnboardingProgress from "@/components/ui/OnboardingProgress";
@@ -28,7 +28,7 @@ type FormData = {
 
 const OnboardingStep1Screen = ({
   navigation,
-}: AuthScreenProps<"OnboardingStep1">) => {
+}: OnboardingScreenProps<"OnboardingStep1">) => {
   const { t } = useTranslation();
   const [form, setForm] = useState<FormData>({
     displayName: "",

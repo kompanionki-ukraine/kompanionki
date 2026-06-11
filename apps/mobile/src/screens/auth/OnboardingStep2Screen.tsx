@@ -10,10 +10,11 @@ import {
   ScrollView,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import type { AuthScreenProps } from "@/navigation/types";
+import type { OnboardingScreenProps } from "@/navigation/types";
 import type { LifeStage, ChildrenStatus } from "@kompanionki/shared";
 import { styles } from "./OnboardingStep2Screen.styles";
 import OnboardingProgress from "@/components/ui/OnboardingProgress";
+import { OnboardingSection } from "@/components/ui/OnboardingSection";
 
 const LIFE_STAGES: LifeStage[] = [
   "single",
@@ -33,7 +34,7 @@ const CHILDREN_STATUSES: ChildrenStatus[] = [
 
 const OnboardingStep2Screen = ({
   navigation,
-}: AuthScreenProps<"OnboardingStep2">) => {
+}: OnboardingScreenProps<"OnboardingStep2">) => {
   const { t } = useTranslation();
   const [lifeStage, setLifeStage] = useState<LifeStage | null>(null);
   const [childrenStatus, setChildrenStatus] = useState<ChildrenStatus | null>(null);
@@ -47,52 +48,54 @@ const OnboardingStep2Screen = ({
 
         <Text style={styles.title}>{t("onboarding.step1Title")}</Text>
 
-        <Text style={styles.sectionLabel}>{t("onboarding.lifeStage")} *</Text>
-        <View style={styles.optionsGrid}>
-          {LIFE_STAGES.map((ls) => (
-            <Pressable
-              key={ls}
-              style={({ pressed }) => [
-                styles.option,
-                lifeStage === ls && styles.optionSelected,
-                pressed && styles.pressed,
-              ]}
-              onPress={() => setLifeStage(ls)}
-            >
-              <Text
-                style={[
-                  styles.optionText,
-                  lifeStage === ls && styles.optionTextSelected,
+        <OnboardingSection title={t("onboarding.lifeStage")} required>
+          <View style={styles.optionsGrid}>
+            {LIFE_STAGES.map((ls) => (
+              <Pressable
+                key={ls}
+                style={({ pressed }) => [
+                  styles.option,
+                  lifeStage === ls && styles.optionSelected,
+                  pressed && styles.pressed,
                 ]}
+                onPress={() => setLifeStage(ls)}
               >
-                {t(`lifeStages.${ls}`)}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
+                <Text
+                  style={[
+                    styles.optionText,
+                    lifeStage === ls && styles.optionTextSelected,
+                  ]}
+                >
+                  {t(`lifeStages.${ls}`)}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </OnboardingSection>
 
-        <Text style={styles.sectionLabel}>{t("onboarding.childrenStatus")} *</Text>
-        <View style={styles.optionsCol}>
-          {CHILDREN_STATUSES.map((cs) => (
-            <Pressable
-              key={cs}
-              style={({ pressed }) => [
-                styles.optionRow,
-                childrenStatus === cs && styles.optionRowSelected,
-                pressed && styles.pressed,
-              ]}
-              onPress={() => setChildrenStatus(cs)}
-            >
-              <View
-                style={[
-                  styles.radio,
-                  childrenStatus === cs && styles.radioSelected,
+        <OnboardingSection title={t("onboarding.childrenStatus")} required>
+          <View style={styles.optionsCol}>
+            {CHILDREN_STATUSES.map((cs) => (
+              <Pressable
+                key={cs}
+                style={({ pressed }) => [
+                  styles.optionRow,
+                  childrenStatus === cs && styles.optionRowSelected,
+                  pressed && styles.pressed,
                 ]}
-              />
-              <Text style={styles.optionText}>{t(`childrenStatuses.${cs}`)}</Text>
-            </Pressable>
-          ))}
-        </View>
+                onPress={() => setChildrenStatus(cs)}
+              >
+                <View
+                  style={[
+                    styles.radio,
+                    childrenStatus === cs && styles.radioSelected,
+                  ]}
+                />
+                <Text style={styles.optionText}>{t(`childrenStatuses.${cs}`)}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </OnboardingSection>
       </ScrollView>
 
       <View style={styles.footer}>

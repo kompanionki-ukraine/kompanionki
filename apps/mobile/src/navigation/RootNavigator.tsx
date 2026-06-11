@@ -3,14 +3,17 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import type { Session } from "@supabase/supabase-js";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { setDevFlagsHydrated } from "@/store/devFlagsSlice";
-import { setCredentials, logout, setLanguage } from "@/store/sessionSlice";
+import { setCredentials, logout, setLanguage, setOnboardingCompleted } from "@/store/sessionSlice";
 import MainTabs from "./MainTabs";
+import OnboardingStack from "./OnboardingStack";
 import SplashScreen from "@/screens/SplashScreen";
 import SocialRegistrationScreen from "@/screens/auth/SocialRegistrationScreen";
 import { supabase } from "@/lib/supabase";
 import type { RootParamList } from "./types";
 import { syncUserProfile } from "@/api/syncUser";
 import { loadSavedLanguage, detectDeviceLanguage, persistLanguage } from "@/utils/language";
+import { loadOnboardingCompleted, persistOnboardingCompleted } from "@/utils/onboardingStorage";
+import { getApiBaseUrl } from "@/config/apiBaseUrl";
 import i18n from "@/i18n";
 
 const Stack = createNativeStackNavigator<RootParamList>();
@@ -20,6 +23,70 @@ function credentialsFromSession(session: Session) {
     userId: session.user.id,
     accessToken: session.access_token,
   };
+}
+
+/**
+ * Checks whether the user has a profile on the server.
+ * Returns true if profile exists, false if 404, throws on other errors.
+ */
+async function fetchProfileExists(accessToken: string): Promise<boolean> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/api/v1/profiles/me`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      signal: controller.signal,
+    });
+    if (res.status === 404) return false;
+    if (!res.ok) throw new Error(`Profile check failed (${res.status})`);
+    return true;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/**
+ * Resolves onboarding status for a freshly authenticated user.
+ * 1. Fast path: local AsyncStorage flag (works offline).
+ * 2. Fallback: query server when no local flag (covers reinstall / new device).
+ * Returns true if onboarding is complete.
+ */
+async function resolveOnboardingStatus(
+  userId: string,
+  accessToken: string,
+): Promise<boolean> {
+  const local = await loadOnboardingCompleted(userId);
+  if (local) return true;
+
+  try {
+    const exists = await fetchProfileExists(accessToken);
+    if (exists) {
+      await persistOnboardingCompleted(userId);
+      return true;
+    }
+    return false;
+  } catch {
+    // Network error on first launch — show onboarding (createProfile is an upsert)
+    return false;
+  }
+}
+
+/**
+ * Background validation after the local flag granted access.
+ * If the profile is genuinely gone on the server, kicks the user back to onboarding.
+ */
+function validateProfileInBackground(
+  userId: string,
+  accessToken: string,
+  onInvalid: () => void,
+) {
+  fetchProfileExists(accessToken)
+    .then((exists) => {
+      if (!exists) onInvalid();
+    })
+    .catch(() => {
+      // Network unavailable — trust the local flag
+    });
 }
 
 const RootNavigator = () => {
@@ -38,6 +105,7 @@ const RootNavigator = () => {
   //   2. Or attach a `source: "supabase" | "dev"` discriminator on the
   //      session slice and only treat "supabase" as authenticated in release.
   const isAuthedFromRedux = useAppSelector((s) => s.session.isAuthenticated);
+  const onboardingCompleted = useAppSelector((s) => s.session.onboardingCompleted);
 
   useEffect(() => {
     (async () => {
@@ -56,21 +124,32 @@ const RootNavigator = () => {
       try {
         const { data } = await supabase.auth.getSession();
         if (cancelled) return;
+
         if (data.session) {
           const { data: refreshed } = await supabase.auth.refreshSession();
           const activeSession = refreshed.session ?? data.session;
           setSession(activeSession);
           dispatch(setCredentials(credentialsFromSession(activeSession)));
+
           try {
             await syncUserProfile(activeSession.access_token);
           } catch (err) {
             console.error("[RootNavigator] syncUserProfile failed on restore:", err);
           }
+
+          const userId = activeSession.user.id;
+          const completed = await resolveOnboardingStatus(userId, activeSession.access_token);
+          dispatch(setOnboardingCompleted(completed));
+
+          if (completed) {
+            validateProfileInBackground(userId, activeSession.access_token, () => {
+              if (!cancelled) dispatch(setOnboardingCompleted(false));
+            });
+          }
         } else {
           setSession(null);
         }
 
-        // Load persisted language (or detect from device on first launch)
         const saved = await loadSavedLanguage();
         const lang = saved ?? detectDeviceLanguage();
         if (!saved) await persistLanguage(lang);
@@ -98,6 +177,9 @@ const RootNavigator = () => {
         } catch (err) {
           console.error("[RootNavigator] syncUserProfile failed on sign-in:", err);
         }
+        const userId = nextSession.user.id;
+        const completed = await resolveOnboardingStatus(userId, nextSession.access_token);
+        dispatch(setOnboardingCompleted(completed));
       }
     });
 
@@ -119,16 +201,15 @@ const RootNavigator = () => {
 
   return (
     <Stack.Navigator
-      key={isAuthed ? "main" : "auth"}
+      key={isAuthed ? (onboardingCompleted ? "main" : "onboarding") : "auth"}
       screenOptions={{ headerShown: false, animation: "fade" }}
     >
-      {isAuthed ? (
-        <Stack.Screen name="Main" component={MainTabs} />
+      {!isAuthed ? (
+        <Stack.Screen name="SocialRegistration" component={SocialRegistrationScreen} />
+      ) : !onboardingCompleted ? (
+        <Stack.Screen name="OnboardingStack" component={OnboardingStack} />
       ) : (
-        <Stack.Screen
-          name="SocialRegistration"
-          component={SocialRegistrationScreen}
-        />
+        <Stack.Screen name="Main" component={MainTabs} />
       )}
     </Stack.Navigator>
   );
