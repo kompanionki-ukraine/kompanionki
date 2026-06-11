@@ -4,6 +4,7 @@ import { api } from "../api/client";
 import sessionReducer from "./sessionSlice";
 import uiReducer from "./uiSlice";
 import devFlagsReducer from "./devFlagsSlice";
+import { devFlagsListener } from "./devFlagsListener";
 
 export const store = configureStore({
   reducer: {
@@ -22,7 +23,9 @@ export const store = configureStore({
         warnAfter: 128,
         ignoredPaths: [api.reducerPath],
       },
-    }).concat(api.middleware),
+    })
+      .prepend(devFlagsListener.middleware)
+      .concat(api.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

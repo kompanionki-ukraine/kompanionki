@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from "react-nativ
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import type { AuthScreenProps } from "../../navigation/types";
+import Logo from "../../components/ui/Logo";
 import { colors, typography, spacing, radius } from "../../theme";
 
 /** OTP flow removed; kept for navigation typing if AuthStack is used. */
@@ -14,9 +15,7 @@ export default function WelcomeScreen({ navigation }: AuthScreenProps<"Welcome">
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
       <View style={styles.container}>
         <View style={styles.hero}>
-          <View style={styles.logo}>
-            <Text style={styles.logoHeart}>♥</Text>
-          </View>
+          <Logo size={140} style={styles.logo} />
           <Text style={styles.title}>{t("appName")}</Text>
           <Text style={styles.tagline}>{t("tagline")}</Text>
         </View>
@@ -47,16 +46,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
   },
   hero: { alignItems: "center", gap: spacing.sm },
-  logo: {
-    width: 90,
-    height: 90,
-    borderRadius: 20,
-    backgroundColor: colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: spacing.sm,
-  },
-  logoHeart: { fontSize: 44, color: colors.surface },
+  logo: { marginBottom: spacing.sm },
   title: { ...typography.heading1, color: colors.text },
   tagline: {
     ...typography.body,

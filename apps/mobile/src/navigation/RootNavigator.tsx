@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import type { Session } from "@supabase/supabase-js";
-import { useAppDispatch } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import { setDevFlagsHydrated } from "../store/devFlagsSlice";
 import { setCredentials, logout } from "../store/sessionSlice";
 import MainTabs from "./MainTabs";
@@ -29,6 +29,18 @@ export default function RootNavigator() {
   const dispatch = useAppDispatch();
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
+  // Dev test-user flow: skipOnboarding seeds creds into the session slice
+  // without a Supabase Session object — accept that as authenticated too.
+  //
+  // TODO: FOR FUTURE PRODUCTION
+  // This bypass means any code that calls setCredentials() can grant app
+  // access without a real Supabase session. Today only the dev-only
+  // loadTestSession mutation does that (and the BE route 404s in prod), so
+  // it's safe — but the invariant is implicit. Before prod:
+  //   1. Gate this fallback on __DEV__ so release builds ignore it entirely.
+  //   2. Or attach a `source: "supabase" | "dev"` discriminator on the
+  //      session slice and only treat "supabase" as authenticated in release.
+  const isAuthedFromRedux = useAppSelector((s) => s.session.isAuthenticated);
 
   useEffect(() => {
     (async () => {
@@ -47,14 +59,18 @@ export default function RootNavigator() {
       try {
         const { data } = await supabase.auth.getSession();
         if (cancelled) return;
-        setSession(data.session);
         if (data.session) {
-          dispatch(setCredentials(credentialsFromSession(data.session)));
+          const { data: refreshed } = await supabase.auth.refreshSession();
+          const activeSession = refreshed.session ?? data.session;
+          setSession(activeSession);
+          dispatch(setCredentials(credentialsFromSession(activeSession)));
           try {
-            await syncUserProfile(data.session.access_token);
+            await syncUserProfile(activeSession.access_token);
           } catch (err) {
             console.error("[RootNavigator] syncUserProfile failed on restore:", err);
           }
+        } else {
+          setSession(null);
         }
       } catch (err) {
         console.error("[RootNavigator] getSession failed:", err);
@@ -95,12 +111,14 @@ export default function RootNavigator() {
     );
   }
 
+  const isAuthed = Boolean(session) || isAuthedFromRedux;
+
   return (
     <Stack.Navigator
-      key={session ? "main" : "auth"}
+      key={isAuthed ? "main" : "auth"}
       screenOptions={{ headerShown: false, animation: "fade" }}
     >
-      {session ? (
+      {isAuthed ? (
         <Stack.Screen name="Main" component={MainTabs} />
       ) : (
         <Stack.Screen

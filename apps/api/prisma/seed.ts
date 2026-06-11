@@ -20,6 +20,7 @@ async function main() {
       childrenCount: 2,
       intents: [Intent.co_parenting, Intent.friendship],
       valuesTags: ["сім'я", "природа", "здоров'я"],
+      avatarUrl: "https://randomuser.me/api/portraits/women/44.jpg",
     },
     {
       id: "00000000-0000-0000-0000-000000000002",
@@ -68,6 +69,7 @@ async function main() {
             childrenCount: u.childrenCount,
             languages: ["Українська"],
             occupation: "Не вказано",
+            avatarUrl: u.avatarUrl ?? null,
             valuesTags: u.valuesTags,
             dealBreakers: [],
             verifiedLevel: "phone",

@@ -109,6 +109,15 @@ export const api = createApi({
       query: (body) => ({ url: "/auth/refresh", method: "POST", body }),
     }),
 
+    // ── Dev ─────────────────────────────────────────────────────────────────
+    // Dev-only: issue a JWT for the seeded test user (gated by NODE_ENV on BE)
+    loadTestSession: builder.mutation<
+      { accessToken: string; userId: string },
+      void
+    >({
+      query: () => ({ url: "/dev/test-session", method: "POST" }),
+    }),
+
     // ── Profile ─────────────────────────────────────────────────────────────
     // Fetch the authenticated user's own profile
     getMyProfile: builder.query<UserProfile, void>({
@@ -409,6 +418,7 @@ export const api = createApi({
 
 export const {
   useRefreshTokenMutation,
+  useLoadTestSessionMutation,
   useGetMyProfileQuery,
   useCreateProfileMutation,
   useUpdateProfileMutation,

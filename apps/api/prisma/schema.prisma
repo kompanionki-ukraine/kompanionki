@@ -21,7 +21,6 @@ enum UserStatus {
 
 enum LanguagePref {
   uk
-  ru
   en
 }
 

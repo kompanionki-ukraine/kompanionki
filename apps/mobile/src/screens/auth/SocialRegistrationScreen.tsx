@@ -22,6 +22,7 @@ import {
   signInWithFacebook,
   signInWithGoogle,
 } from "../../auth/socialSignIn";
+import { useAppSelector } from "../../store";
 import {
   resendSignupOtp,
   signInWithEmail,
@@ -53,7 +54,6 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [socialExpanded, setSocialExpanded] = useState(false);
   const [emailBusy, setEmailBusy] = useState<EmailBusy>(null);
   const [socialBusy, setSocialBusy] = useState<SocialBusy>(null);
 
@@ -71,6 +71,8 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
   const showPasswordError = passwordTouched && !passwordValid;
 
   const showApple = isAppleSignInAvailable();
+  const enableAppleIDSignIn = useAppSelector((s) => s.devFlags.flags.enableAppleIDSignIn);
+  const enableFacebookSignIn = useAppSelector((s) => s.devFlags.flags.enableFacebookSignIn);
 
   const guardSupabase = useCallback((): boolean => {
     if (!isSupabaseConfigured) {
@@ -122,7 +124,7 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
         const { needsConfirmation, emailTaken } = await signUpWithEmail(trimmed, password);
         if (emailTaken) {
           Alert.alert(t("auth.emailTakenTitle"), t("auth.emailTakenBody"), [
-            { text: t("actions.confirm"), onPress: () => setSocialExpanded(true) },
+            { text: t("actions.confirm") },
           ]);
         } else if (needsConfirmation) {
           setOtpEmail(trimmed);
@@ -314,95 +316,163 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Header */}
+          {/* Page title */}
           <View style={styles.header}>
             <Text style={[typography.heading2, styles.title]}>
-              {t("auth.emailTitle")}
+              {mode === "register" ? t("auth.registerTitle") : t("auth.emailTitle")}
             </Text>
-            <Text style={[typography.body, styles.subtitle]}>
+          </View>
+
+          {/* Section 1 — email auth */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>
               {mode === "register"
                 ? t("auth.emailRegisterSubtitle")
                 : t("auth.emailSignInSubtitle")}
             </Text>
-          </View>
 
-          {/* Email field */}
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>{t("auth.emailLabel")}</Text>
-            <TextInput
-              style={[styles.input, showEmailError && styles.inputError]}
-              value={email}
-              onChangeText={setEmail}
-              onBlur={() => setEmailTouched(true)}
-              placeholder={t("auth.emailPlaceholder")}
-              placeholderTextColor={colors.textMuted}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-              textContentType="emailAddress"
-              autoComplete="email"
-              editable={!busy}
-              returnKeyType="next"
-            />
-            {showEmailError && (
-              <Text style={styles.errorText}>{t("errors.invalidEmail")}</Text>
-            )}
-          </View>
-
-          {/* Password field */}
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>{t("auth.passwordLabel")}</Text>
-            <View style={styles.passwordRow}>
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>{t("auth.emailLabel")}</Text>
               <TextInput
-                style={[
-                  styles.input,
-                  styles.passwordInput,
-                  showPasswordError && styles.inputError,
-                ]}
-                value={password}
-                onChangeText={setPassword}
-                onBlur={() => setPasswordTouched(true)}
-                placeholder={t("auth.passwordPlaceholder")}
+                style={[styles.input, showEmailError && styles.inputError]}
+                value={email}
+                onChangeText={setEmail}
+                onBlur={() => setEmailTouched(true)}
+                placeholder={t("auth.emailPlaceholder")}
                 placeholderTextColor={colors.textMuted}
-                secureTextEntry={!showPassword}
-                textContentType={mode === "register" ? "newPassword" : "password"}
-                autoComplete={mode === "register" ? "new-password" : "current-password"}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                textContentType="emailAddress"
+                autoComplete="email"
                 editable={!busy}
-                returnKeyType="done"
-                onSubmitEditing={handleEmailSubmit}
+                returnKeyType="next"
               />
-              <TouchableOpacity
-                style={styles.eyeBtn}
-                onPress={() => setShowPassword((v) => !v)}
-                accessibilityLabel={
-                  showPassword ? t("auth.hidePassword") : t("auth.showPassword")
-                }
-              >
-                <Text style={styles.eyeText}>
-                  {showPassword ? t("auth.hide") : t("auth.show")}
-                </Text>
-              </TouchableOpacity>
+              {showEmailError && (
+                <Text style={styles.errorText}>{t("errors.invalidEmail")}</Text>
+              )}
             </View>
-            {showPasswordError && (
-              <Text style={styles.errorText}>{t("errors.passwordTooShort")}</Text>
-            )}
+
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>{t("auth.passwordLabel")}</Text>
+              <View style={styles.passwordRow}>
+                <TextInput
+                  style={[
+                    styles.input,
+                    styles.passwordInput,
+                    showPasswordError && styles.inputError,
+                  ]}
+                  value={password}
+                  onChangeText={setPassword}
+                  onBlur={() => setPasswordTouched(true)}
+                  placeholder={t("auth.passwordPlaceholder")}
+                  placeholderTextColor={colors.textMuted}
+                  secureTextEntry={!showPassword}
+                  textContentType={mode === "register" ? "newPassword" : "password"}
+                  autoComplete={mode === "register" ? "new-password" : "current-password"}
+                  editable={!busy}
+                  returnKeyType="done"
+                  onSubmitEditing={handleEmailSubmit}
+                />
+                <TouchableOpacity
+                  style={styles.eyeBtn}
+                  onPress={() => setShowPassword((v) => !v)}
+                  accessibilityLabel={
+                    showPassword ? t("auth.hidePassword") : t("auth.showPassword")
+                  }
+                >
+                  <Text style={styles.eyeText}>
+                    {showPassword ? t("auth.hide") : t("auth.show")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {showPasswordError && (
+                <Text style={styles.errorText}>{t("errors.passwordTooShort")}</Text>
+              )}
+            </View>
+
+            <TouchableOpacity
+              style={[styles.btn, styles.btnPrimary, busy && styles.btnDisabled]}
+              onPress={handleEmailSubmit}
+              disabled={busy}
+              accessibilityRole="button"
+            >
+              {emailBusy ? (
+                <ActivityIndicator color={colors.textInverse} />
+              ) : (
+                <Text style={[styles.btnLabel, styles.btnLabelOnDark]}>
+                  {mode === "register" ? t("auth.registerBtn") : t("auth.signInBtn")}
+                </Text>
+              )}
+            </TouchableOpacity>
           </View>
 
-          {/* Primary CTA */}
-          <TouchableOpacity
-            style={[styles.btn, styles.btnPrimary, busy && styles.btnDisabled]}
-            onPress={handleEmailSubmit}
-            disabled={busy}
-            accessibilityRole="button"
-          >
-            {emailBusy ? (
-              <ActivityIndicator color={colors.textInverse} />
-            ) : (
-              <Text style={[styles.btnLabel, styles.btnLabelOnDark]}>
-                {mode === "register" ? t("auth.registerBtn") : t("auth.signInBtn")}
-              </Text>
-            )}
-          </TouchableOpacity>
+          {/* Section 2 — social auth */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>
+              {mode === "register" ? t("auth.socialExpand") : t("auth.socialSectionSignIn")}
+            </Text>
+
+            <View style={styles.socialGroup}>
+              {enableAppleIDSignIn && (
+                showApple ? (
+                  <TouchableOpacity
+                    style={[styles.btn, styles.btnApple]}
+                    disabled={busy}
+                    onPress={() => runSocial("apple", signInWithApple)}
+                    accessibilityRole="button"
+                  >
+                    {socialBusy === "apple" ? (
+                      <ActivityIndicator color={colors.textInverse} />
+                    ) : (
+                      <Text style={[styles.btnLabel, styles.btnLabelOnDark]}>
+                        {mode === "register" ? t("auth.continueApple") : t("auth.signInApple")}
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                ) : (
+                  <View style={[styles.btn, styles.btnMuted]} accessibilityElementsHidden>
+                    <Text style={styles.btnLabelMuted}>
+                      {mode === "register" ? t("auth.continueApple") : t("auth.signInApple")}
+                    </Text>
+                    <Text style={styles.hintSmall}>{t("auth.appleIosOnly")}</Text>
+                  </View>
+                )
+              )}
+
+              <TouchableOpacity
+                style={[styles.btn, styles.btnGoogle]}
+                disabled={busy}
+                onPress={() => runSocial("google", signInWithGoogle)}
+                accessibilityRole="button"
+              >
+                {socialBusy === "google" ? (
+                  <ActivityIndicator color={colors.text} />
+                ) : (
+                  <Text style={styles.btnLabel}>
+                    {mode === "register" ? t("auth.continueGoogle") : t("auth.signInGoogle")}
+                  </Text>
+                )}
+              </TouchableOpacity>
+
+              {enableFacebookSignIn && (
+                <TouchableOpacity
+                  style={[styles.btn, styles.btnFacebook]}
+                  disabled={busy}
+                  onPress={() => runSocial("facebook", signInWithFacebook)}
+                  accessibilityRole="button"
+                >
+                  {socialBusy === "facebook" ? (
+                    <ActivityIndicator color={colors.textInverse} />
+                  ) : (
+                    <Text style={[styles.btnLabel, styles.btnLabelOnDark]}>
+                      {mode === "register" ? t("auth.continueFacebook") : t("auth.signInFacebook")}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
 
           {/* Mode switch */}
           <TouchableOpacity
@@ -416,71 +486,6 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
                 : t("auth.switchToRegister")}
             </Text>
           </TouchableOpacity>
-
-          {/* Social expand */}
-          <TouchableOpacity
-            style={[styles.btn, styles.btnOutline]}
-            onPress={() => setSocialExpanded((v) => !v)}
-            disabled={busy}
-            accessibilityRole="button"
-          >
-            <Text style={styles.btnLabelOutline}>{t("auth.socialExpand")}</Text>
-          </TouchableOpacity>
-
-          {/* Social buttons — revealed when expanded */}
-          {socialExpanded && (
-            <View style={styles.socialGroup}>
-              {showApple ? (
-                <TouchableOpacity
-                  style={[styles.btn, styles.btnApple]}
-                  disabled={busy}
-                  onPress={() => runSocial("apple", signInWithApple)}
-                  accessibilityRole="button"
-                >
-                  {socialBusy === "apple" ? (
-                    <ActivityIndicator color={colors.textInverse} />
-                  ) : (
-                    <Text style={[styles.btnLabel, styles.btnLabelOnDark]}>
-                      {t("auth.continueApple")}
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              ) : (
-                <View style={[styles.btn, styles.btnMuted]} accessibilityElementsHidden>
-                  <Text style={styles.btnLabelMuted}>{t("auth.continueApple")}</Text>
-                  <Text style={styles.hintSmall}>{t("auth.appleIosOnly")}</Text>
-                </View>
-              )}
-
-              <TouchableOpacity
-                style={[styles.btn, styles.btnGoogle]}
-                disabled={busy}
-                onPress={() => runSocial("google", signInWithGoogle)}
-                accessibilityRole="button"
-              >
-                {socialBusy === "google" ? (
-                  <ActivityIndicator color={colors.text} />
-                ) : (
-                  <Text style={styles.btnLabel}>{t("auth.continueGoogle")}</Text>
-                )}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.btn, styles.btnFacebook]}
-                disabled={busy}
-                onPress={() => runSocial("facebook", signInWithFacebook)}
-                accessibilityRole="button"
-              >
-                {socialBusy === "facebook" ? (
-                  <ActivityIndicator color={colors.textInverse} />
-                ) : (
-                  <Text style={[styles.btnLabel, styles.btnLabelOnDark]}>
-                    {t("auth.continueFacebook")}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -490,7 +495,7 @@ export default function SocialRegistrationScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: "#EBEBEB",
   },
   flex: {
     flex: 1,
@@ -502,14 +507,28 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop: spacing.xxl,
-    paddingBottom: spacing.xl,
+    paddingBottom: spacing.lg,
   },
   title: {
     color: colors.text,
-    marginBottom: spacing.sm,
+    textAlign: "center",
   },
   subtitle: {
     color: colors.textSecondary,
+    textAlign: "center",
+    marginTop: spacing.xs,
+  },
+  section: {
+    backgroundColor: "#F5F5F5",
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  sectionTitle: {
+    ...typography.body,
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
   },
   fieldGroup: {
     marginBottom: spacing.md,
@@ -587,7 +606,6 @@ const styles = StyleSheet.create({
   },
   socialGroup: {
     gap: spacing.sm,
-    marginTop: spacing.sm,
   },
   btnApple: {
     backgroundColor: "#000000",
